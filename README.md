@@ -103,7 +103,7 @@ The site uses **three** third-party APIs, but only **two** need a key.
 | Widget | Service | Key needed? |
 |---|---|---|
 | Quote of the Day | API Ninjas | Yes |
-| On This Day | Byabbe (Wikipedia) |n**No key at all** |
+| On This Day | Byabbe (Wikipedia) |**No key at all** |
 | Practice Question | Google Gemini | Yes |
 
 ### 4a. Google Gemini key (for the Practice Question widget)
