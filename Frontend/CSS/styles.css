@@ -1,0 +1,5152 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Verdana, sans-serif;
+}
+
+html, body {
+    height: 100%;
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+
+/* ====== Loading Overlay ====== */
+.modal {
+    display: none; /* Hides it */
+    position: fixed;
+    inset: 0; /* top:0 right:0 bottom:0 left:0 */
+    background: rgba(42, 76, 110, 0.45);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(3px); /* Blurs everything behind the overlay. */
+}
+
+/* White card centered inside the overlay for spinner */
+.loadingBox {
+    background: rgba(249, 249, 249, 0.8);
+    border: 1px solid #C8D8EA;
+    border-radius: 15px;
+    padding: 35px 35px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Space between box and spinner */
+    box-shadow: 0 4px 20px rgba(46, 123, 196, 0.15);
+}
+
+.loadingBox p {
+    color: #4A6580;
+    font-size: 14px;
+    margin: 0;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #C8D8EA;
+    border-top-color: #2E7BC4; /* When spinner is on top */
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite; /* Rotates forever */
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ====== Toast notification ====== */
+
+.toastNotif {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    padding: 12px 20px;
+    background: #FFFFFF;
+    border: 1px solid #C8D8EA;
+    border-left: 4px solid #2E7BC4;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1A2B3C;
+    box-shadow: 0 4px 20px rgba(46, 123, 196, 0.15);
+    opacity: 0; /* Transparent */
+    transform: translateY(14px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none; /* Does not block clicks behind it. */
+    max-width: 320px;
+}
+
+.toastNotif.show {
+    opacity: 1; /* Visible */
+    transform: translateY(0);
+}
+
+/* Just the left border colour changes */
+.toastNotif.toastSuccess {
+    border-left-color: #2E9E6B;
+}
+
+.toastNotif.toastError {
+    border-left-color: #C0392B;
+}
+
+/* ====== Auth Screen ====== */
+#authScreen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 25px 20px;
+    background-color: #EEF4FB;
+    background-image: repeating-linear-gradient(
+        transparent,
+        transparent 30px,
+        #C8D8EA 32px
+    ); /* Faint horizontal lines */
+}
+
+/* ====== Brand block ====== */
+.authBrand {
+    width: 100%;
+    max-width: 750px;
+    display: flex; /* Logo and text side by side */
+    align-items: center;
+    background: #FFFFFF;
+    border: 1px solid #C8D8EA;
+    border-radius: 16px;
+    padding: 16px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(46, 123, 196, 0.15);
+}
+
+.logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain; /* Keeps the logo's original proportions */
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
+}
+
+.authBrandText {
+    flex: 1; /* Takes up all remaining horizontal space */
+    text-align: center;
+    padding-right: 100px;
+}
+
+.authBrand h1 {
+    font-size: 29px;
+    font-weight: 700;
+    color: #1A2B3C;
+    letter-spacing: 1px;
+}
+
+#p1 {
+    color: #4A6580;
+    font-size: 14px;
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+#p2 {
+    color: #2E7BC4;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+
+/* ====== Authentication Card ====== */
+
+/* The white card holding the login/register forms */
+.authCard {
+    width: 100%;
+    max-width: 430px;
+    background: #FFFFFF;
+    border: 1px solid #C8D8EA;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(46, 123, 196, 0.15);
+}
+
+/* ====== Auth Tabs ====== */
+
+/* The Login / Register switcher */
+.authTabs {
+    display: flex;
+    gap: 4px;
+    background: #EEF4FB;
+    border: 1px solid #C8D8EA;
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 24px;
+}
+
+.authTab {
+    flex: 1; /* makes both tabs equal width */
+    padding: 9px;
+    border: none;
+    background: transparent;
+    color: #4A6580;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+/* The active tab */
+.authTab.activeTab {
+    background: #2E7BC4;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(46, 123, 196, 0.3);
+}
+
+/* Inactive tab darkens text on hover */
+.authTab:hover:not(.activeTab) {
+    color: #1A2B3C;
+    background: rgba(46, 123, 196, 0.08);
+}
+
+/* ====== Auth Forms ====== */
+.authForm {
+    display: none;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* JS adds this class to whichever form should be visible */
+.authForm.activeForm {
+    display: flex;
+}
+
+/* ====== Form entries ====== */
+.entries {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.entries label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #4A6580;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.entries input,
+.entries select {
+    padding: 10px 13px;
+    background: #EEF4FB;
+    border: 1px solid #C8D8EA;
+    border-radius: 10px;
+    color: #1A2B3C;
+    font-size: 15px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+/* Placeholder text */
+.entries input::placeholder {
+    color: #7A96B0;
+}
+
+/* On focus (when the user clicks into a field) */
+.entries input:focus,
+.entries select:focus {
+    border-color: #2E7BC4;
+    box-shadow: 0 0 0 3px rgba(46, 123, 196, 0.18);
+    transform: translateY(-1px);
+}
+
+/* Hover on inputs */
+.entries input:hover,
+.entries select:hover {
+    border-color: #7A96B0;
+}
+
+/* Two-column grid */
+.entriesRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Both columns get equal space */
+    gap: 14px;
+}
+
+/* ====== Inline message ====== */
+
+/* Hidden by default - JS adds .show to reveal it */
+.inlineMsg {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 10px;
+    display: none;
+    transition: transform 0.2s ease;
+}
+
+.inlineMsg.show {
+    display: block;
+    animation: popIn 0.2s ease;
+}
+
+/* Small scale-up animation */
+@keyframes popIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.successMsg {
+    background: #E8F7F0;
+    color: #2E9E6B;
+    border: 1px solid #A8DFC5;
+}
+
+.errorMsg {
+    background: #FDEDEC;
+    color: #C0392B;
+    border: 1px solid #F0B9B3;
+}
+
+/* ====== Primary button ====== */
+.btnPrimary {
+    padding: 11px 22px;
+    background: #2E7BC4;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btnPrimary:hover {
+    background: #1A5A9A;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(46, 123, 196, 0.4);
+}
+
+/* Pressing the button pushes it down */
+.btnPrimary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(46, 123, 196, 0.2);
+}
+
+/* ====== Switch text ====== */
+.switchText {
+    text-align: center;
+    font-size: 14px;
+    color: #4A6580;
+    margin-top: 4px;
+}
+
+/* The clickable span inside switchText */
+.switchText span {
+    color: #2E7BC4;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: underline;
+    transition: color 0.15s ease;
+}
+
+.switchText span:hover {
+    color: #1A5A9A;
+}
+
+/* ====== Fixed top header ====== */
+.appHeader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 65px;
+    background: #FFFFFF;
+    border-bottom: 1px solid #C8D8EA;
+    box-shadow: 0 2px 8px rgba(46, 123, 196, 0.1);
+    display: flex; /* Flexbox */
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 200; /* On top */
+    gap: 16px;
+}
+
+/* ====== Header left - logo + brand name ====== */
+
+.appHeaderLeft {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0; /* Never shrinks when space is tight */
+    min-width: 200px;
+}
+
+/* Logo image in the header — smaller than the auth screen logo */
+.headerLogo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
+.appHeaderBrandName {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2E7BC4;
+    letter-spacing: 0.2px;
+}
+
+/* ====== Header center — search bar ====== */
+
+/* The search bar is centered within this column. */
+.appHeaderCenter {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    max-width: 480px;
+    position: relative; /* anchor point for the dropdown panel */
+}
+
+/* Wraps the icon and input together */
+.headerSearchWrap {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: #EEF4FB;
+    border: 1px solid #C8D8EA;
+    border-radius: 24px; /* Searchbar shape */
+    padding: 0 16px;
+    gap: 8px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.headerSearchWrap:focus-within {
+    border-color: #2E7BC4;
+    box-shadow: 0 0 0 3px rgba(46, 123, 196, 0.15);
+}
+
+.headerSearchIcon {
+    color: #7A96B0;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+/* The actual input inside the searchbar */
+.headerSearchInput {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    color: #1A2B3C;
+    padding: 10px 0;
+}
+
+.headerSearchInput::placeholder {
+    color: #7A96B0;
+}
+
+/* ====== Header right — nav buttons + user ====== */
+
+.appHeaderRight {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    min-width: 200px;
+    justify-content: flex-end;
+}
+
+/* Each nav icon button in the header */
+.headerNavBtn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: #4A6580;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+    position: relative;
+}
+
+.headerNavBtn:hover {
+    background: #EEF4FB;
+    color: #2E7BC4;
+}
+
+/* Active nav button */
+.headerNavBtn.activeHeaderNav {
+    color: #2E7BC4;
+    border-bottom: 2px solid #2E7BC4;
+    border-radius: 0;
+}
+
+.headerNavIcon {
+    font-size: 18px;
+    line-height: 1;
+    position: relative;
+}
+
+.headerNavLabel {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Thin vertical line between nav buttons and user pill */
+.headerNavDivider {
+    width: 1.5px;
+    height: 40px;
+    background: #C8D8EA;
+    margin: 0 6px;
+}
+
+/* Clickable user pill - profile picture + username */
+.headerUserPill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.headerUserPill:hover {
+    background: #EEF4FB;
+}
+
+/* Small circular avatar — shows initials or image */
+.headerAvatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #2E7BC4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: #FFFFFF;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid #C8D8EA;
+}
+
+.headerAvatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Logout button */
+.btnLogout {
+    padding: 7px 14px;
+    background: transparent;
+    border: 1px solid #C8D8EA;
+    border-radius: 8px;
+    color: #4A6580;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    white-space: nowrap;
+}
+
+.btnLogout:hover {
+    border-color: #d42512;
+    color: #d42512;
+    background: #f7d8d6;
+}
+
+/* ====== Three-column body layout ====== */
+/* ====== Left sidebar */
+.sidebarLeft {
+    position: fixed;
+    top: 65px;
+    left: 0;
+    height: calc(100vh - 65px);
+    width: 220px;
+    flex-shrink: 0;
+    background: #FFFFFF;
+    border-right: 1px solid #C8D8EA;
+    box-shadow: 2px 0 8px rgba(46, 123, 196, 0.08);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 150;
+}
+
+/* ====== Nav items container ====== */
+
+/* flex:1 pushes the settings button to the very bottom */
+.sidebarNav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 35px 8px 12px 8px;
+    flex: 1;
+}
+
+/* ====== Each sidebar button ====== */
+
+.sidebarBtn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    color: #000000;
+    cursor: pointer;
+    text-align: left;
+    white-space: nowrap; /* stops the label from wrapping mid-animation */
+    overflow: hidden;
+    width: 100%;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.sidebarBtnLabel {
+    font-size: 14px;
+    opacity: 1;
+    overflow: visible;
+    max-width: 140px;
+    white-space: nowrap;
+}
+
+.sidebarBtn:hover {
+    background: #EEF4FB;
+    color: #2E7BC4;
+    transform: translateX(3px); /* slight nudge right on hover */
+}
+
+/* Active button - filled highlight */
+.sidebarBtn.activeLeftNav {
+    background: rgba(46, 123, 196, 0.1);
+    color: #2E7BC4;
+    font-weight: 600;
+}
+
+/* ====== Icon inside each button ====== */
+
+/* Icon images — sized to match the emoji icons */
+.sidebarBtnImg {
+    width: 25px;
+    height: 30px;
+    object-fit: contain;
+    display: block;
+}
+
+#likesBtn img {
+    width: 20px;
+    height: 30px;
+}
+
+#profileBtn img {
+    width: 35px;
+    height: 35px;
+}
+
+.sidebarBtnIcon {
+    font-size: 25px;
+    flex-shrink: 0; /* keeps the icon from compressing */
+    width: 24px;  /* fixed width keeps icons aligned */
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+    position: relative;
+}
+
+/* Icon scales slightly on button hover */
+.sidebarBtn:hover .sidebarBtnIcon {
+    transform: scale(1.15);
+}
+
+/* ====== Settings pinned at the bottom ====== */
+
+.sidebarBottom {
+    padding: 8px;
+    border-top: 1px solid #EEF4FB;
+}
+
+/* ====== Adjust main content to account for collapsed sidebar ====== */
+
+.appBody {
+    display: flex;
+    padding-top: 60px;
+    padding-left: 220px;    /* sidebar width */
+    min-height: 100vh;
+    background: #EEF4FB;
+    background-image: repeating-linear-gradient(
+        transparent,
+        transparent 31px,
+        #D8E8F4 32px
+    );
+}
+
+/* ====== Center main content (scrollable) ====== */
+
+.appMain {
+    flex: 1; /* Fill all space between the two sidebars */
+    overflow-y: auto;
+    padding: 20px 16px 60px;
+    max-width: 725px; /* Keeps posts a comfortable reading width */
+    min-width: 0; /* Prevents flex overflow issues */
+}
+
+/* ====== Section headers inside the feed ====== */
+
+.sectionHeader {
+    margin-bottom: 20px;
+}
+
+.sectionHeader h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1A2B3C;
+    letter-spacing: -0.3px;
+}
+
+.sectionHeader p {
+    color: #4A6580;
+    font-size: 14px;
+    margin-top: 3px;
+}
+
+/* ====== Sections — show/hide pattern ====== */
+
+/* All sections are hidden by default */
+.section {
+    display: none;
+}
+
+/* JS adds .activeSection to whichever section is current */
+.section.activeSection {
+    display: block;
+}
+
+/* ====== Post composer shortcut card ====== */
+
+/* The clickable "Share a solution…" bar at the top of the feed */
+.composerCard {
+    background: #FFFFFF;
+    border: 1px solid #C8D8EA;
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(46, 123, 196, 0.1);
+}
+
+/* Small avatar(?) inside the composer */
+.composerAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #2E7BC4;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 2px solid #C8D8EA;
+}
+
+/* The clickable text area that looks like a text input */
+.composerBtn {
+    flex: 1;
+    padding: 10px 16px;
+    background: #EEF4FB;
+    border: 1px solid #C8D8EA;
+    border-radius: 24px;
+    color: #7A96B0;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.composerBtn:hover {
+    background: #FFFFFF;
+    border-color: #2E7BC4;
+    color: #4A6580;
+}
+
+/* ====== Post form card ====== */
+
+/* White card wrapping the entire form */
+.postFormCard {
+    background: #FFFFFF;
+    border: 1px solid #C8D8EA;
+    border-radius: 16px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    box-shadow: 0 2px 8px rgba(46, 123, 196, 0.1);
+}
+
+/* ====== Post type pills ====== */
+
+.postTypeSection {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.postTypeLabel {
+    font-size: 12px;
+    font-weight: 600;
+    color: #4A6580;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* The three pills sit in a row */
+.postTypePills {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Hide the actual radio input */
+.postTypeRadio {
+    display: none;
+}
+
+/* Individual pills */
+.postTypePill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 14px 22px;
+    background: #EEF4FB;
+    border: 2px solid #C8D8EA;
+    border-radius: 14px;
+    cursor: pointer;
+    flex: 1;
+    min-width: 100px;
+    transition: border-color 0.2s ease, background 0.2s ease,
+                transform 0.15s ease, box-shadow 0.15s ease;
+    text-align: center;
+    user-select: none;
+}
+
+.postTypePill:hover {
+    border-color: #2E7BC4;
+    background: rgba(46, 123, 196, 0.06);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(46, 123, 196, 0.15);
+}
+
+/* When the hidden radio is checked, style the label as selected */
+.postTypeRadio:checked + .postTypePill {
+    background: #2E7BC4;
+    border-color: #2E7BC4;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(46, 123, 196, 0.35);
+}
+
+.postTypePillIcon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.postTypePillText {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.postTypePillSub {
+    font-size: 11px;
+    opacity: 0.8;
+}
+
+/* ====== Post template hint ====== */
+.postTemplateHint {
+    background: rgba(46, 123, 196, 0.06);
+    border: 1px solid rgba(46, 123, 196, 0.2);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #4A6580;
+    line-height: 1.7;
+    display: none; /* shown by JS when a type is selected */
+}
+
+.postTemplateHint.visible {
+    display: block;
+}
+
+.postTemplateHint strong {
+    color: #2E7BC4;
+    display: block;
+    margin-bottom: 4px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ====== Content text area ====== */
+.postContentArea {
+    min-height: 220px;
+    line-height: 1.7;
+    font-size: 14px;
+    padding: 12px 14px;
+    background: #EEF4FB;
+    border: 1px solid #C8D8EA;
+    border-radius: 10px;
+    color: #1A2B3C;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.postContentArea::placeholder {
+    color: #7A96B0;
+}
+
+.postContentArea:focus {
+    border-color: #2E7BC4;
+    box-shadow: 0 0 0 3px rgba(46, 123, 196, 0.15);
+}
+
+/* ====== Upload limit label ====== */
+.uploadLimit {
+    font-size: 12px;
+    color: #7A96B0;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: 6px;
+}
+
+/* ====== Upload trigger button ====== */
+
+/* Button that opens the file picker */
+.uploadTriggerBtn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    background: #EEF4FB;
+    border: 2px dashed #C8D8EA;
+    border-radius: 10px;
+    color: #4A6580;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    transition: border-color 0.2s ease, background 0.2s ease,
+                color 0.2s ease, transform 0.15s ease;
+    text-align: left;
+}
+
+.uploadTriggerBtn:hover {
+    border-color: #2E7BC4;
+    background: rgba(46, 123, 196, 0.05);
+    color: #2E7BC4;
+    transform: translateY(-1px);
+}
+
+/* ====== Image preview strip ====== */
+
+/* Horizontal scrollable row of thumbnails */
+.imagePreviewStrip {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+/* Each thumbnail wrapper */
+.previewThumb {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #C8D8EA;
+    flex-shrink: 0;
+    transition: border-color 0.2s ease, transform 0.15s ease;
+}
+
+.previewThumb:hover {
+    border-color: #2E7BC4;
+    transform: scale(1.04);
+}
+
+/* The thumbnail image itself */
+.previewThumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Small red X button to remove a thumbnail */
+.previewRemoveBtn {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(192, 57, 43, 0.85);
+    color: #FFFFFF;
+    border: none;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.previewRemoveBtn:hover {
+    background: #C0392B;
+    transform: scale(1.15);
+}
+
+/* Count label below the preview strip */
+.imageCountLabel {
+    font-size: 12px;
+    color: #7A96B0;
+    margin-top: 4px;
+}
+
+.imageCountLabel.atLimit {
+    color: #C0392B;
+    font-weight: 600;
+}
+
+/* ====== Unread red dot ====== */
+.unreadDot {
+    position: absolute;
+    top: -2px;
+    right: -4px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #C0392B;
+    border: 1.5px solid #FFFFFF;
+}
+
+/* ====== Chat layout - two panels side by side ====== */
+.chatLayout {
+    display: flex;
+    gap: 16px;
+    height: calc(100vh - 160px);
+    max-height: 760px;
+}
+
+/* ====== Left panel - conversation list ====== */
+
+.chatListPanel {
+    width: 300px;
+    flex-shrink: 0;
+    background: #FFFFFF;
+    border: 1px solid #C8D8EA;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(46, 123, 196, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.chatListHeader {
+    padding: 18px 18px 14px;
+    border-bottom: 1px solid #EEF4FB;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.chatListTitle {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1A2B3C;
+}
+
+.chatListSearch {
+    width: 100%;
+    padding: 9px 14px;
+    background: #EEF4FB;
+    border: 1px solid #C8D8EA;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #1A2B3C;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.chatListSearch:focus {
+    border-color: #2E7BC4;
+}
+
+.chatConversationList {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px;
+}
+
+/* Single conversation row */
+.chatListItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-bottom: 4px;
+    transition: background 0.2s ease;
+}
+
+.chatListItem:hover {
+    background: #EEF4FB;
+}
+
+.chatListItem.activeChatItem {
+    background: rgba(46, 123, 196, 0.1);
+}
+
+.chatListAvatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #2E7BC4;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.chatListAvatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.chatListInfo {
+    flex: 1;
+    overflow: hidden;
+}
+
+.chatListName {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1A2B3C;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chatListPreview {
+    font-size: 12px;
+    color: #7A96B0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+    max-width: 200px;
+}
+
+.chatListPreview.unreadPreview {
+    color: #1A2B3C;
+    font-weight: 600;
+}
+
+.chatListUnreadDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2E7BC4;
+    flex-shrink: 0;
+}
+
+/* ====== Right panel - thread/empty state ====== */
+
+/* Fix chatThreadEmpty — must be flex by default */
+.chatThreadEmpty {
+    flex: 1;
+    display: flex;          /* was missing explicit display */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 100%;
+}
+
+/* chatThreadPanel must be flex column to contain both children */
+.chatThreadPanel {
+    flex: 1;
+    background: #FFFFFF;
+    border: 1px solid #C8D8EA;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(46, 123, 196, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.chatEmptyCircle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #1A2B3C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: #1A2B3C;
+}
+
+.chatEmptyTitle {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1A2B3C;
+}
+
+.chatEmptySub {
+    font-size: 14px;
+    color: #7A96B0;
+}
+
+/* Chat thread layout */
+
+/* The active thread is a column: header, body, input */
+.chatThreadActive {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex: 1;
+}
+
+.chatThreadHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid #EEF4FB;
+    flex-shrink: 0;
+}
+
+.chatThreadHeaderLeft {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chatThreadAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #2E7BC4;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.chatThreadHeaderInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.chatThreadName {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1A2B3C;
+}
+
+.chatThreadUsername {
+    font-size: 12px;
+    color: #7A96B0;
+}
+
+.chatDetailsBtn {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: #4A6580;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.chatDetailsBtn:hover {
+    background: #EEF4FB;
+    color: #2E7BC4;
+}
+
+/* ====== Thread body — messages + details panel ====== */
+.chatThreadBody {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ====== Scrollable messages area ====== */
+.chatMessages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.chatNoMessages {
+    text-align: center;
+    color: #7A96B0;
+    font-size: 13px;
+    margin-top: 40px;
+}
+
+/* ====== Message bubbles ====== */
+.chatBubble {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+}
+
+/* Messages you sent — align right */
+.chatBubbleSent {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+
+/* Messages you received — align left */
+.chatBubbleReceived {
+    align-self: flex-start;
+    align-items: flex-start;
+}
+
+.chatBubbleText {
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.chatBubbleSent .chatBubbleText {
+    background: #2E7BC4;
+    color: #FFFFFF;
+    border-bottom-right-radius: 4px;
+}
+
+.chatBubbleReceived .chatBubbleText {
+    background: #EEF4FB;
+    color: #1A2B3C;
+    border-bottom-left-radius: 4px;
+}
+
+/* Shared post bubble — same appearance for sender and receiver */
+.chatBubbleShared {
+    background: transparent;
+    padding: 0;
+    border: none;
+    max-width: 225px;
+    width: 225px;
+}
+
+.chatBubbleWrapperSent .chatBubbleShared {
+    align-self: flex-end;
+}
+
+.chatBubbleWrapperReceived .chatBubbleShared {
+    align-self: flex-start;
+}
+
+.chatBubbleTime {
+    font-size: 11px;
+    color: #7A96B0;
+    margin-top: 3px;
+    padding: 0 4px;
+}
+
+/* ====== Details side panel ====== */
+.chatDetailsPanel {
+    width: 0;
+    overflow: hidden;
+    border-left: 1px solid transparent;
+    transition: width 0.25s ease, border-color 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0;
+    flex-shrink: 0;
+    background: #FFFFFF;
+}
+
+.chatDetailsPanel.chatDetailsPanelOpen {
+    width: 220px;
+    border-left-color: #EEF4FB;
+    padding: 16px 14px;
+}
+
+.chatDetailsHeader {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A2B3C;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #EEF4FB;
+}
+
+.chatDetailsRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chatMuteRow {
+    justify-content: space-between;
+}
+
+.chatDetailsIcon {
+    font-size: 16px;
+}
+
+.chatDetailsLabel {
+    font-size: 13px;
+    color: #1A2B3C;
+    flex: 1;
+}
+
+.chatDetailsDivider {
+    height: 1px;
+    background: #EEF4FB;
+}
+
+.chatDetailsSectionLabel {
+    font-size: 11px;
+    font-weight: 700;
+    color: #7A96B0;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.chatDetailsMember {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chatDetailsMemberAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #2E7BC4;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.chatDetailsMemberInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.chatDetailsMemberName {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1A2B3C;
+}
+
+.chatDetailsMemberUsername {
+    font-size: 11px;
+    color: #7A96B0;
+}
+
+.chatDetailsAction {
+    width: 100%;
+    padding: 8px 12px;
+    background: transparent;
+    border: 1px solid #C8D8EA;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4A6580;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.chatDetailsAction:hover {
+    background: #EEF4FB;
+    color: #1A2B3C;
+}
+
+.chatDetailsActionDanger {
+    border-color: #F5C2B8;
+    color: #C0392B;
+}
+
+.chatDetailsActionDanger:hover {
+    background: #FDEDEC;
+}
+
+/* ====== Message input row ====== */
+.chatInputRow {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid #EEF4FB;
+    flex-shrink: 0;
+}
+
+/* ====== Chat message input ====== */
+.chatMessageInput {
+    flex: 1;
+    padding: 10px 16px;
+    background: #EEF4FB;
+    border: 1px solid #C8D8EA;
+    border-radius: 24px;
+    font-size: 14px;
+    color: #1A2B3C;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chatMessageInput::placeholder {
+    color: #7A96B0;
+}
+
+.chatMessageInput:focus {
+    border-color: #2E7BC4;
+    box-shadow: 0 0 0 3px rgba(46, 123, 196, 0.15);
+}
+
+.chatSendBtn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #2E7BC4;
+    color: #FFFFFF;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.chatSendBtn:hover {
+    background: #1A5A9A;
+    transform: scale(1.05);
+}
+
+/* ====== Chat bubble ====== */
+
+.chatBubbleWrapper {
+    display: flex;
+    flex-direction: column;
+    max-width: 70%;
+    position: relative;
+}
+
+/* Sent messages align right, received align left */
+.chatBubbleWrapperSent {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+
+.chatBubbleWrapperReceived {
+    align-self: flex-start;
+    align-items: flex-start;
+}
+
+/* ====== HOVER ACTION - Hidden by default.====== */
+
+.chatMsgActions {
+    display: none;
+    gap: 4px;
+    align-items: center;
+    margin-top: 4px;
+}
+
+/* Show on hover of the whole wrapper */
+.chatBubbleWrapper:hover .chatMsgActions {
+    display: flex;
+}
+
+/* Sent: tray on the left so it doesn't overlap the bubble edge */
+.chatMsgActionsSent {
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+/* Received: tray on the right */
+.chatMsgActionsReceived {
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.chatMsgLikeBtn,
+.chatMsgReplyBtn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #C8D8EA;
+    background: #FFFFFF;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+    flex-shrink: 0;
+}
+
+.chatMsgLikeBtn:hover {
+    background: #FDEDEC;
+    border-color: #E05555;
+    transform: scale(1.1);
+}
+
+.chatMsgReplyBtn:hover {
+    background: #EEF4FB;
+    border-color: #2E7BC4;
+    transform: scale(1.1);
+}
+
+/* Active (already liked) state */
+.chatMsgLikeBtnActive {
+    color: #C0392B;
+    border-color: #C0392B;
+    background: #FDEDEC;
+}
+
+/* ====== Like reaction row ====== */
+
+.chatMsgLikeRow {
+    font-size: 12px;
+    font-weight: 600;
+    color: #C0392B;
+    background: #FFFFFF;
+    border: 1px solid #F0B9B3;
+    border-radius: 12px;
+    padding: 2px 8px;
+    margin-top: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.chatMsgLikeRowSent {
+    align-self: flex-end;
+}
+
+.chatMsgLikeRowReceived {
+    align-self: flex-start;
+}
+
+/* Reply bar */
+
+.chatReplyBar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #EEF4FB;
+    border-top: 1px solid #C8D8EA;
+    border-bottom: 1px solid #C8D8EA;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.chatReplyBarLabel {
+    font-weight: 700;
+    color: #2E7BC4;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.chatReplyBarText {
+    flex: 1;
+    color: #4A6580;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chatReplyBarCancel {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: #C8D8EA;
+    color: #1A2B3C;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+}
+
+.chatReplyBarCancel:hover {
+    background: #C0392B;
+    color: #FFFFFF;
+}
+
+/* A small quoted section shown at the top of a bubble when
+   this message is a reply to another message. */
+
+.chatReplyQuote {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px 10px;
+    margin-bottom: 6px;
+    border-left: 3px solid rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+/* Sent bubble: white border + semi-transparent white bg */
+.chatBubbleSent .chatReplyQuote {
+    border-left-color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.18);
+}
+
+/* Received bubble: blue border + light blue bg */
+.chatBubbleReceived .chatReplyQuote {
+    border-left-color: #2E7BC4;
+    background: rgba(46, 123, 196, 0.08);
+}
+
+.chatReplyQuoteAuthor {
+    font-weight: 700;
+    color: inherit;
+    opacity: 0.9;
+}
+
+.chatReplyQuoteText {
+    opacity: 0.75;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Shared post cards */
+
+.chatSharedCard {
+    background: #FFFFFF;
+    border: 1px solid #C8D8EA;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+    width: 100%;
+}
+
+.chatSharedCard:hover {
+    opacity: 0.88;
+}
+
+/* Text-only post preview (no image) */
+.chatSharedCardTextThumb {
+    width: 100%;
+    height: 70px;
+    padding: 8px 10px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: inherit;
+    opacity: 0.8;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    background: rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Info section below thumbnail */
+.chatSharedCardInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px 8px;
+}
+
+.chatSharedCardBadge {
+    font-size: 10px;
+    align-self: flex-start;
+}
+
+.chatSharedCardRef {
+    font-size: 11px;
+    font-weight: 600;
+    color: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chatSharedCardAuthor {
+    font-size: 10px;
+    opacity: 0.7;
+}
+
+/* When the post no longer exists in storage */
+.chatSharedCardUnavailable {
+    padding: 12px;
+    font-size: 13px;
+    opacity: 0.6;
+    cursor: default;
+    font-style: italic;
+}
+
+.chatSharedCardUnavailable:hover {
+    opacity: 0.6;
+}
+
+/* Chat inline message bubble */
+
+.chatInlineImage {
+    max-width: 220px;
+    max-height: 180px;
+    border-radius: 10px;
+    display: block;
+    object-fit: contain;
+    cursor: zoom-in;
+}
+
+/* Lightbox overlay */
+
+.chatLightboxOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+}
+
+.chatLightboxImg {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
+
+/* Back to chat banner */
+
+.chatBackBanner {
+    border-left: 3px solid #2E7BC4;
+}
+
+/* ====== Profile card ====== */
+
+.profileCard {
+    background: #FFFFFF;
+    border: 1px solid #C8D8EA;
+    border-radius: 16px;
+    padding: 26px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    box-shadow: 0 2px 8px rgba(46, 123, 196, 0.1);
+}
+
+/* ====== Avatar with change button ====== */
+
+/* Wraps the avatar so the + button can be positioned over its corner */
+.profileAvatarWrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.profileAvatarLarge {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: #2E7BC4;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #C8D8EA;
+    overflow: hidden;
+}
+
+.profileAvatarLarge img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* The + button sitting on the bottom-right corner of the avatar */
+.avatarChangeBtn {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #2E7BC4;
+    color: #FFFFFF;
+    border: 2px solid #FFFFFF;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.avatarChangeBtn:hover {
+    background: #1A5A9A;
+    transform: scale(1.1);
+}
+
+/* ====== Username, stats, bio ====== */
+
+.profileInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Username */
+.profileInfo h3 {
+    font-size: 19px;
+    font-weight: 700;
+    color: #1A2B3C;
+}
+
+.profileStatsRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #4A6580;
+}
+
+/* Followers/Followings */
+.profileStatNum {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A2B3C;
+}
+
+.profileStatDivider {
+    color: #7A96B0;
+}
+
+.profileBioText {
+    font-size: 14px;
+    color: #4A6580;
+    line-height: 1.5;
+    margin-top: 4px;
+}
+
+/* Divider between profile card and posts */
+.profileDividerLine {
+    height: 2px;
+    background: #C8D8EA;
+    margin: 30px 0;
+}
+
+/* Profile stat items */
+
+.profileStatItem {
+    cursor: pointer;
+}
+
+/* Avatar image inside avatar elements */
+
+
+.avatarImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: inherit;
+    display: block;
+}
+
+/* ====== Posts grid - 3 columns ====== */
+
+.postsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+/* Individual post thumbnail inside the grid — square aspect ratio */
+.postsGridItem {
+    aspect-ratio: 1 / 1;
+    background: #EEF4FB;
+    border: 1px solid #C8D8EA;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.postsGridItem:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 14px rgba(46, 123, 196, 0.2);
+}
+
+.postsGridItem img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* If a post has no image, show a text preview block instead */
+.postsGridItemText {
+    width: 100%;
+    height: 100%;
+    padding: 12px;
+    font-size: 12px;
+    color: #4A6580;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+
+/* The emptyState already styled elsewhere needs to span all 3 columns */
+.postsGrid .emptyState {
+    grid-column: 1 / -1;
+}
+
+/* ====== Profile ====== */
+
+.profileActionRow {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.profileActionRow:empty {
+    margin-top: 0;
+}
+
+.profileActionRow .btnFollow,
+.profileActionRow .btnFollowingState,
+.profileActionRow .btnRequestedState,
+.profileActionRow .btnBlockProfile,
+.profileActionRow .btnUnblockProfile,
+.profileActionRow .btnMessage {
+    padding: 9px 22px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    border: none;
+}
+
+.profileActionRow .btnFollow {
+    background: #2E7BC4;
+    color: #FFFFFF;
+}
+
+.profileActionRow .btnFollow:hover {
+    background: #1A5A9A;
+}
+
+.profileActionRow .btnFollowingState {
+    background: #EEF4FB;
+    color: #1A2B3C;
+    border: 1px solid #C8D8EA;
+}
+
+.profileActionRow .btnFollowingState:hover {
+    background: #FDEDEC;
+    color: #C0392B;
+    border-color: #F0B9B3;
+}
+
+.profileActionRow .btnRequestedState {
+    background: #EEF4FB;
+    color: #7A96B0;
+    border: 1px solid #C8D8EA;
+}
+
+.profileActionRow .btnMessage {
+    background: transparent;
+    color: #2E7BC4;
+    border: 1px solid #2E7BC4;
+}
+
+.profileActionRow .btnMessage:hover {
+    background: rgba(46, 123, 196, 0.08);
+}
+
+.profileActionRow .btnBlockProfile {
+    background: #C0392B;
+    color: #FFFFFF;
+}
+
+.profileActionRow .btnBlockProfile:hover {
+    background: #8E2A1F;
+}
+
+.profileActionRow .btnUnblockProfile {
+    background: transparent;
+    color: #C0392B;
+    border: 2px solid #C0392B;
+}
+
+.profileActionRow .btnUnblockProfile:hover {
+    background: #C0392B;
+    color: #FFFFFF;
+}
+
+/* Follow request row */
+
+.followRequestAvatarClickable {
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.followRequestAvatarClickable:hover {
+    opacity: 0.85;
+    transform: scale(1.08);
+}
+
+.followRequestNameClickable {
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.followRequestNameClickable:hover {
+    color: #2E7BC4;
+    text-decoration: underline;
+}
+
+/* Follow tab rows */
+
+.followTabRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 4px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.followTabRow:hover {
+    background: #EEF4FB;
+}
+
+.followTabAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #2E7BC4;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.followTabInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.followTabName {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1A2B3C;
+}
+
+.followTabUsername {
+    font-size: 12px;
+    color: #7A96B0;
+}
+
+.followTabEmpty {
+    text-align: center;
+    color: #7A96B0;
+    font-size: 13px;
+    padding: 20px 0;
+}
+
+/* ====== Settings ====== */
+
+.settingsLayout {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-width: 640px;
+}
+
+.settingsCard {
+    background: #FFFFFF;
+    border: 1px solid #C8D8EA;
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 2px 8px rgba(46, 123, 196, 0.1);
+}
+
+.settingsCardTitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A2B3C;
+    margin-bottom: 4px;
+}
+
+.settingsCardSub {
+    font-size: 12px;
+    color: #7A96B0;
+    margin-bottom: 16px;
+}
+
+/* ====== Generic settings row (used by Dark Mode toggle) ====== */
+
+.settingsRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.settingsRowText {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.settingsRowLabel {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1A2B3C;
+}
+
+.settingsRowSub {
+    font-size: 12px;
+    color: #7A96B0;
+}
+
+/* ====== Privacy pills (reuses the postTypePill hidden-radio trick) ====== */
+
+.privacyOptions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.privacyRadio {
+    display: none;
+}
+
+.privacyPill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 16px 20px;
+    background: #EEF4FB;
+    border: 2px solid #C8D8EA;
+    border-radius: 14px;
+    cursor: pointer;
+    flex: 1;
+    min-width: 160px;
+    text-align: center;
+    user-select: none;
+    transition: border-color 0.2s ease, background 0.2s ease,
+                transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.privacyPill:hover {
+    border-color: #2E7BC4;
+    background: rgba(46, 123, 196, 0.06);
+    transform: translateY(-2px);
+}
+
+/* Same adjacent-sibling pattern as .postTypeRadio:checked + .postTypePill */
+.privacyRadio:checked + .privacyPill {
+    background: #2E7BC4;
+    border-color: #2E7BC4;
+    color: #FFFFFF;
+    box-shadow: 0 6px 16px rgba(46, 123, 196, 0.35);
+}
+
+.privacyPillIcon {
+    font-size: 22px;
+}
+
+.privacyPillText {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.privacyPillSub {
+    font-size: 11px;
+    opacity: 0.75;
+}
+
+/* ====== Follow requests list ====== */
+
+.followRequestsList,
+.blockedUsersList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.followRequestRow,
+.blockedUserRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 12px;
+    background: #EEF4FB;
+    border: 1px solid #C8D8EA;
+}
+
+.followRequestAvatar,
+.blockedUserAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #2E7BC4;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.followRequestName,
+.blockedUserName {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1A2B3C;
+}
+
+.btnAccept {
+    padding: 6px 14px;
+    background: #2E9E6B;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btnAccept:hover {
+    background: #237D54;
+}
+
+.btnDecline,
+.btnUnblock {
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid #C8D8EA;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4A6580;
+    cursor: pointer;
+    margin-left: 6px;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.btnDecline:hover,
+.btnUnblock:hover {
+    border-color: #C0392B;
+    color: #C0392B;
+}
+
+/* ====== Settings forms (Edit Profile / Change Password) ====== */
+
+.settingsForm {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ====== Delete account zone ====== */
+
+.settingsCardDanger {
+    border-color: #F5C2B8;
+    background: #FDEDEC;
+}
+
+.settingsCardTitleDanger {
+    color: #C0392B;
+}
+
+.btnDanger {
+    padding: 10px 18px;
+    background: #C0392B;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btnDanger:hover {
+    background: #8E2A1F;
+}
+
+
+/* =======Notifications ====== */
+
+#notificationsList {
+    display: flex;
+    flex-direction: column;
+    max-width: 640px;
+}
+
+/* ====== Month group label ====== */
+.notifMonthLabel {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A2B3C;
+    margin: 18px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #EEF4FB;
+}
+
+/* ====== One notification row ====== */
+.notifRow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 8px;
+    border-radius: 12px;
+    transition: background 0.2s ease;
+    cursor: default;
+}
+
+.notifRow:hover {
+    background: #EEF4FB;
+}
+
+/* Unread rows get a faint blue tint */
+.notifRow.unreadNotif {
+    background: rgba(46, 123, 196, 0.06);
+}
+
+/* ====== Avatar stack ====== */
+.notifAvatarStack {
+    position: relative;
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+}
+
+.notifAvatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #2E7BC4;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* The small "+N" badge that overlaps the bottom-right of the main avatar */
+.notifAvatarSecondary {
+    position: absolute;
+    bottom: -4px;
+    right: -6px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #4A6580;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #FFFFFF;
+}
+
+/* Notifications row clickable actor name span */
+
+.notifActorLink {
+    cursor: pointer;
+    display: inline;
+}
+
+.notifActorLink:hover strong {
+    text-decoration: underline;
+    color: #2E7BC4;
+}
+
+/* Also make the notification avatar clickable */
+.notifAvatarClickable {
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.notifAvatarClickable:hover {
+    opacity: 0.85;
+    transform: scale(1.06);
+}
+
+/* ====== Message text ====== */
+.notifTextWrap {
+    flex: 1;
+    font-size: 13px;
+    color: #1A2B3C;
+    line-height: 1.6;
+}
+
+.notifTextWrap strong {
+    font-weight: 700;
+}
+
+.notifTimeLabel {
+    font-size: 12px;
+    color: #7A96B0;
+    margin-left: 6px;
+}
+
+/* ====== Right action area ====== */
+.notifActionArea {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* "Follow back" pill button */
+.notifFollowBackPill {
+    padding: 7px 16px;
+    background: #2E7BC4;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.notifFollowBackPill:hover {
+    background: #1A5A9A;
+    transform: translateY(-1px);
+}
+
+.notifFollowBackPill:disabled {
+    background: #C8D8EA;
+    color: #7A96B0;
+    cursor: default;
+    transform: none;
+}
+
+/* ====================================================
+   Notification pill */
+
+.notifPillDisabled {
+    background: #C8D8EA !important;
+    color: #4A6580 !important;
+    cursor: default;
+    transform: none !important;
+}
+
+/* Post thumbnail on the right for like/comment/rating */
+.notifThumb {
+    width: 46px;
+    height: 46px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #EEF4FB;
+    border: 1px solid #C8D8EA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.notifThumb:hover {
+    opacity: 0.8;
+}
+
+/* When the thumb is an actual <img> element */
+.notifThumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 8px;
+}
+
+/* ====== Pinned follow requests banner ====== */
+.notifRequestsBanner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 8px;
+    border-bottom: 1px solid #C8D8EA;
+    margin-bottom: 12px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background 0.2s ease;
+}
+
+.notifRequestsBanner:hover {
+    background: #EEF4FB;
+}
+
+.notifRequestsIcon {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(46, 123, 196, 0.1);
+    border: 1px solid rgba(46, 123, 196, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.notifRequestsTextWrap {
+    flex: 1;
+}
+
+.notifRequestsTitle {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1A2B3C;
+}
+
+.notifRequestsSub {
+    font-size: 12px;
+    color: #7A96B0;
+    margin-top: 2px;
+}
+
+.notifRequestsArrow {
+    color: #7A96B0;
+    font-size: 20px;
+    font-weight: 300;
+}
+
+/* Inline follow req panel (notifications) */
+
+.inlineFollowReqPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 0 4px;
+}
+
+/* ====== Confirmation / Info Modal (shared by logout, delete, info) ====== */
+.appModalCard {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 36px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    min-width: 320px;
+    max-width: 420px;
+    text-align: center;
+}
+
+.appModalTitle {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1A2B3C;
+}
+
+.appModalBody {
+    font-size: 14px;
+    color: #4A6580;
+    line-height: 1.7;
+    text-align: left;
+    margin-bottom: 4px;
+}
+
+.appModalBtns {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    margin-top: 6px;
+}
+
+.modalCloseBtn {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #7A96B0;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.modalCloseBtn:hover {
+    background: #EEF4FB;
+    color: #1A2B3C;
+}
+
+/* Needed so the X positions relative to the card, not the viewport */
+.appModalCard {
+    position: relative;
+}
+
+/*nModal body */
+
+.appModalBodyCentered {
+    text-align: center;
+}
+
+/* Info modal close button */
+
+#infoModal .btnConfirmCancel {
+    flex: 1;
+}
+
+/* Danger confirm button — used by logout Yes and delete Delete */
+.btnConfirmDanger {
+    flex: 1;
+    padding: 11px;
+    background: #C0392B;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.btnConfirmDanger:hover {
+    background: #8E2A1F;
+    transform: translateY(-1px);
+}
+
+/* Cancel / neutral button — used by all modals */
+.btnConfirmCancel {
+    flex: 1;
+    padding: 11px;
+    background: #C8D8EA;
+    color: #1A2B3C;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.btnConfirmCancel:hover {
+    background: #A8B8CA;
+    transform: translateY(-1px);
+}
+
+/* Followers / followings tab */
+
+.followersModalCard {
+    max-width: 420px;
+    width: 90%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.followersModalTabs {
+    margin: 12px 0 0;
+}
+
+.followTabList {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 120px;
+    max-height: 400px;
+}
+
+.followersModalBtns {
+    margin-top: 14px;
+}
+
+/* ====== Liked post section ====== */
+
+/* The count badge showing how many posts are liked */
+.likedPostsCount {
+    font-size: 13px;
+    color: #7A96B0;
+    margin-bottom: 16px;
+}
+
+/* ====== Saved post section ====== */
+
+.savedPostsCount {
+    font-size: 13px;
+    color: #7A96B0;
+    margin-bottom: 16px;
+}
+
+.emptyStateImg {
+    width: 48px;
+    height: 48px;
+    opacity: 0.4;
+    margin-bottom: 8px;
+}
+/* ====== Search result panel ====== */
+
+.searchResultsPanel {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 100%;
+    max-height: 360px;
+    overflow-y: auto;
+    background: #FFFFFF;
+    border: 1px solid #C8D8EA;
+    border-radius: 14px;
+    box-shadow: 0 8px 28px rgba(46, 123, 196, 0.18);
+    padding: 8px;
+    z-index: 300;
+}
+
+.searchPanelEmpty {
+    padding: 16px;
+    text-align: center;
+    font-size: 13px;
+    color: #7A96B0;
+}
+
+.searchPanelSectionLabel {
+    font-size: 11px;
+    font-weight: 700;
+    color: #7A96B0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 8px 8px 4px;
+}
+
+.searchPanelRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.searchPanelRow:hover {
+    background: #EEF4FB;
+}
+
+.searchPanelSubjectRow {
+    border-bottom: 1px solid #EEF4FB;
+    margin-bottom: 4px;
+    padding-bottom: 12px;
+}
+
+.searchPanelSubjectIcon {
+    font-size: 18px;
+}
+
+.searchPanelSubjectText {
+    font-size: 13px;
+    color: #1A2B3C;
+}
+
+.searchPanelAvatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #2E7BC4;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.searchPanelUserInfo {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.searchPanelUsername {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1A2B3C;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.searchPanelFullName {
+    font-size: 12px;
+    color: #7A96B0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ====== Feed filter (subject filter / single post view) ====== */
+
+.feedFilterBanner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #EEF4FB;
+    border: 1px solid #C8D8EA;
+    border-radius: 12px;
+    font-size: 13px;
+    color: #1A2B3C;
+    margin-bottom: 14px;
+}
+
+.feedFilterClearBtn {
+    margin-left: auto;
+    padding: 6px 14px;
+    background: #FFFFFF;
+    border: 1px solid #C8D8EA;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #2E7BC4;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.feedFilterClearBtn:hover {
+    background: #2E7BC4;
+    color: #FFFFFF;
+}
+
+/* Feed sort */
+
+.feedSortBar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.feedSortBtn {
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: 1px solid #C8D8EA;
+    background: #FFFFFF;
+    color: #4A6580;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease,
+                border-color 0.2s ease, transform 0.15s ease;
+}
+
+.feedSortBtn:hover {
+    border-color: #2E7BC4;
+    color: #2E7BC4;
+    transform: translateY(-1px);
+}
+
+.feedSortBtnActive {
+    background: #2E7BC4;
+    color: #FFFFFF;
+    border-color: #2E7BC4;
+    box-shadow: 0 3px 10px rgba(46, 123, 196, 0.3);
+}
+
+.feedSortBtnActive:hover {
+    background: #1A5A9A;
+    color: #FFFFFF;
+    border-color: #1A5A9A;
+}
+
+/* For you badge */
+
+.forYouBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    background: rgba(46, 123, 196, 0.1);
+    border: 1px solid rgba(46, 123, 196, 0.3);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #2E7BC4;
+    margin-bottom: 10px;
+    letter-spacing: 0.03em;
+}
+
+.feedLoadMoreWrap {
+    display: flex;
+    justify-content: center;
+    padding: 12px 0 20px;
+}
+
+.feedLoadMoreBtn {
+    padding: 9px 22px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2E7BC4;
+    background: #FFFFFF;
+    border: 1px solid #C8D8EA;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.feedLoadMoreBtn:hover {
+    background: #2E7BC4;
+    color: #FFFFFF;
+}
+
+.feedLoadMoreBtn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* ====== Post card outer wrapper ====== */
+.postCard {
+    background: #F4F8FD;
+    border: 1px solid #C8D8EA;
+    border-radius: 18px;
+    padding: 14px;
+    box-shadow: 0 2px 10px rgba(46, 123, 196, 0.08);
+}
+
+/* ====== Nested header card ====== */
+.postCardHeader {
+    background: #FFFFFF;
+    border: 1px solid #EEF4FB;
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+/* ====== Post body inside the outer card ====== */
+.postBody {
+    font-size: 14px;
+    color: #1A2B3C;
+    line-height: 1.5;
+    margin: 10px 2px 12px;
+    white-space: pre-wrap;
+}
+
+/* ====== Attached image — fixed proportional size ====== */
+.postImageWrap {
+    margin: 10px 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #EEF4FB;
+    display: block;
+    max-width: 100%;
+}
+
+img.postImage {
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;     /* contain = no cropping, full image visible */
+    display: block;
+    border-radius: inherit;
+}
+
+/* ====== Post card ====== */
+
+/* Cursor and subtle hover to signal the avatar is clickable */
+.postAvatarClickable {
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.postAvatarClickable:hover {
+    opacity: 0.85;
+    transform: scale(1.06);
+}
+
+/* Author name becomes an underlined link on hover */
+.postAuthorNameClickable {
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.postAuthorNameClickable:hover {
+    color: #2E7BC4;
+    text-decoration: underline;
+}
+
+/* ====== Nested footer card (stars + action bar + comments) ====== */
+.postCardFooterWrap {
+    background: #FFFFFF;
+    border: 1px solid #EEF4FB;
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-top: 12px;
+}
+
+.postCardFooter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 0;
+    border-top: none;
+    margin-top: 0;
+}
+
+.postStarsRow {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0 0 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #EEF4FB;
+}
+
+/* ====== Meta row inside header card ====== */
+.postAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #2E7BC4;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 2px solid #C8D8EA;
+}
+
+.postMeta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+}
+
+.postActionBtn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid #C8D8EA;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #4A6580;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.saveIconImg {
+    width: 15px;
+    height: 15px;
+    vertical-align: middle;
+}
+
+.postActionBtn:hover {
+    background: #EEF4FB;
+    color: #2E7BC4;
+    border-color: #2E7BC4;
+}
+
+.btnLikeToggle.likedState {
+    color: #C0392B;
+    border-color: #C0392B;
+}
+
+.btnSaveToggle.savedState {
+    color: #2E7BC4;
+    border-color: #2E7BC4;
+}
+
+/* ====== Star rating ====== */
+
+.starBtn {
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    color: #C8D8EA;
+    cursor: pointer;
+    padding: 0 1px;
+    transition: color 0.15s ease, transform 0.1s ease;
+    line-height: 1;
+}
+
+.starBtn:hover,
+.starBtn.starFilled {
+    color: #F0A500;
+}
+
+.starBtn:hover {
+    transform: scale(1.2);
+}
+
+.ratingAvg {
+    font-size: 12px;
+    color: #7A96B0;
+    margin-left: 6px;
+}
+
+/* ====== Comments panel ====== */
+.commentsPanel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.commentsPanel.commentsPanelOpen {
+    border-top: 1px solid #EEF4FB;
+    margin-top: 10px;
+    padding-top: 10px;
+    max-height: 260px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+.commentsList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.commentRow {
+    display: flex;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.commentAuthor {
+    font-weight: 700;
+    color: #1A2B3C;
+    flex-shrink: 0;
+}
+
+.commentText {
+    color: #4A6580;
+}
+
+.commentsEmpty {
+    font-size: 13px;
+    color: #7A96B0;
+    text-align: center;
+    padding: 8px 0;
+}
+
+.commentInputRow {
+    display: flex;
+    gap: 8px;
+}
+
+.commentInput {
+    flex: 1;
+    padding: 8px 12px;
+    background: #EEF4FB;
+    border: 1px solid #C8D8EA;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #1A2B3C;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.commentInput:focus {
+    border-color: #2E7BC4;
+}
+
+.commentSendBtn {
+    padding: 8px 14px;
+    background: #2E7BC4;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s ease;
+}
+
+.commentSendBtn:hover {
+    background: #1A5A9A;
+}
+
+.btnLoadEarlier {
+    background: transparent;
+    border: none;
+    font-size: 12px;
+    color: #2E7BC4;
+    cursor: pointer;
+    padding: 4px 0;
+    text-align: left;
+    text-decoration: underline;
+}
+
+.btnLoadEarlier:hover {
+    color: #1A5A9A;
+}
+
+/* ====== Image carousel ====== */
+.postCarousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.postCarouselTrack {
+    display: flex;
+    width: 100%;  /* Constrain track to container — prevents overflow */
+    transition: transform 0.3s ease;
+}
+
+.postCarouselSlide {
+    flex: 0 0 100%;  /* Fixed at exactly 100% of track — never grows/shrinks */
+    width: 100%; /* Belt-and-suspenders for older browsers */
+    min-width: 0;  /* Override any inherited min-width */
+}
+
+.postCarouselCounter {
+    position: absolute;
+    bottom: 10px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 12px;
+    pointer-events: none;
+}
+
+.postCarouselBtn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1A2B3C;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.postCarouselBtn:hover {
+    background: #FFFFFF;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.postCarouselPrev {
+    left: 10px;
+}
+
+.postCarouselNext {
+    right: 10px;
+}
+
+/* Post delete */
+
+.postDeleteBtn {
+    background: transparent;
+    border: none;
+    font-size: 25px;
+    width: 50px;
+    cursor: pointer;
+    padding: 5px 5px;
+    border-radius: 8px;
+    color: #000408;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, background 0.2s ease, color 0.2s ease;
+    margin-left: 6px;
+    flex-shrink: 0;
+}
+
+.postDeleteBtn:hover {
+    opacity: 1;
+    background: #FDEDEC;
+    color: #C0392B;
+}
+
+/* ====== Shared subject badge ====== */
+
+.subjectBadge {
+    display: inline-block;
+    padding: 3px 10px;
+    background: rgba(46, 123, 196, 0.1);
+    border: 1px solid rgba(46, 123, 196, 0.25);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #2E7BC4;
+}
+
+.postTypeBadge {
+    display: inline-block;
+    padding: 3px 10px;
+    background: rgba(46, 123, 196, 0.1);
+    border: 1px solid rgba(46, 123, 196, 0.25);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #2E7BC4;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-left: auto;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+/* ====== Sub heading ====== */
+
+.subHeading {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1A2B3C;
+    margin: 24px 0 12px;
+}
+
+/* ====== Empty state ====== */
+
+.emptyState {
+    text-align: center;
+    padding: 48px 20px;
+    color: #7A96B0;
+}
+
+.emptyIcon {
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+/* ====== Post list ====== */
+
+.postList {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* ====== Right sidebar ====== */
+
+/* Make the sidebar a flex column so cards + footer stack naturally */
+.sidebarRight {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 12px 12px;
+    position: fixed;
+    top: 65px;
+    right: 0;
+    width: 300px;
+    height: calc(100vh - 65px);
+    border-left: 1px solid #C8D8EA;
+    overflow-y: auto;
+    z-index: 100;
+    align-items: center;
+}
+
+.apiCard {
+    background: #FFFFFF;
+    border: 1px solid #C8D8EA;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(46, 123, 196, 0.08);
+    flex-shrink: 0;
+    width: 240px;
+}
+
+.apiCardTitle {
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #4A6580;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #EEF4FB;
+    background: #F4F8FD;
+}
+
+/* Body area - square-ish proportions, ready for any widget */
+.apiCardBody {
+    width: 100%;
+    min-height: 175px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5px;
+    font-size: 11px;
+    color: #7A96B0;
+}
+
+/* Widget 1 - Quote of the Day */
+.quoteText {
+    font-size: 13px;
+    font-style: italic;
+    color: #1A2B3C;
+    line-height: 1.4;
+    margin-bottom: 5px;
+}
+
+.quoteAuthor {
+    font-size: 11px;
+    font-weight: 600;
+    color: #2E7BC4;
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Widgets 1 & 2 (Quote + Word of the Day) - compact: short content, no wasted height */
+#apiCard1 .apiCardBody,
+#apiCard2 .apiCardBody {
+    min-height: 0;
+    padding: 10px;
+    max-height: fit-content;
+}
+
+/* Widget 2 - On This Day */
+.otdYear {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2E7BC4;
+    margin-bottom: 4px;
+}
+
+.otdEvent {
+    font-size: 13px;
+    color: #1A2B3C;
+    line-height: 1.4;
+}
+
+.otdSource {
+    font-size: 11px;
+    color: #7A96B0;
+    text-align: right;
+    margin-top: 5px;
+}
+
+/* Widget 2 - Cambridge-style Question Generator */
+#apiCard3 .apiCardBody {
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.questionWidgetInputRow {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    flex-shrink: 0; /* never compress, even if the question below grows tall */
+}
+
+.questionWidgetInput {
+    flex: 1;
+    padding: 6px 10px;
+    background: #EEF4FB;
+    border: 1px solid #C8D8EA;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #1A2B3C;
+    outline: none;
+    min-width: 0; /* allows the input to shrink inside the flex row */
+}
+
+.questionWidgetInput:focus {
+    border-color: #2E7BC4;
+}
+
+.questionWidgetReloadBtn {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    border: 1px solid #C8D8EA;
+    background: #FFFFFF;
+    color: #2E7BC4;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.questionWidgetReloadBtn:hover {
+    background: #EEF4FB;
+    transform: rotate(45deg);
+}
+
+.questionWidgetSendBtn {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    border: none;
+    background: #2E7BC4;
+    color: #FFFFFF;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.questionWidgetSendBtn:hover {
+    background: #1A5A9A;
+    transform: scale(1.05);
+}
+
+.questionWidgetBody {
+    overflow: hidden;
+}
+
+
+.questionWidgetSendBtn:hover {
+    background: #1A5A9A;
+    transform: scale(1.05);
+}
+
+
+
+/* No scrollbar */
+.questionWidgetBody {
+    overflow: hidden;
+}
+
+.questionWidgetHint {
+    font-size: 12px;
+    color: #7A96B0;
+}
+
+.questionWidgetError {
+    font-size: 12px;
+    color: #C0392B;
+}
+
+.questionWidgetSubjectLabel {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(46, 123, 196, 0.1);
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #2E7BC4;
+    margin-bottom: 6px;
+}
+
+.questionWidgetText {
+    font-size: 13px;
+    color: #1A2B3C;
+    line-height: 1.4;
+}
+
+/* ====== Info modal (About / Privacy / Terms) ====== */
+
+/* Slightly wider than the logout modal since it has more text */
+.infoModalContent {
+    max-width: 420px;
+    text-align: left;
+    position: relative;
+}
+
+.infoModalContent h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1A2B3C;
+    margin-bottom: 12px;
+}
+
+/* ====== Info modal body text ====== */
+/* The card, title and button reuse the logout modal classes */
+.infoModalBody {
+    font-size: 14px;
+    color: #4A6580;
+    line-height: 1.7;
+    text-align: left;
+    margin-bottom: 4px;
+}
+
+/* Small footer at the very bottom of the right sidebar */
+.rightFooter {
+    padding: 0px 5px;
+}
+
+.footerLinks {
+    font-size: 11px;
+    color: #7A96B0;
+    line-height: 1.4;
+}
+
+.footerLinks span {
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.footerLinks span:hover {
+    color: #2E7BC4;
+    text-decoration: underline;
+}
+
+.footerCopy {
+    font-size: 10px;
+    color: #7A96B0;
+    margin-top: 4px;
+}
+
+/* ====== Visibility helpers ====== */
+
+/* #homeShell — hidden until login succeeds */
+.homeShellHidden {
+    display: none;
+}
+
+/* #searchResultsPanel — hidden until the user types */
+.searchResultsHidden {
+    display: none;
+}
+
+/* #headerChatDot, #headerNotifDot, #sidebarChatDot
+   — hidden until there are unread items */
+.unreadDotHidden {
+    display: none;
+}
+
+/* #chatThreadActive — hidden until a conversation is opened */
+.chatThreadActiveHidden {
+    display: none;
+}
+
+/* .postImageWrap inside the post card template
+   — hidden until the post actually has images */
+.postImageWrapHidden {
+    display: none;
+}
+
+/* #followRequestsCard in Settings — hidden for public accounts */
+.followRequestsCardHidden {
+    display: none;
+}
+
+/* Hidden file inputs (avatar upload + post image upload) */
+.fileInputHidden {
+    display: none;
+}
+
+/* Share Post Modal */
+
+.shareModalCard {
+    max-width: 400px;
+    width: 90%;
+}
+
+.shareSearchInput {
+    width: 100%;
+    margin: 8px 0 12px;
+}
+
+.shareUserList {
+    max-height: 240px;
+    overflow-y: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+/* The Send button inside the share modal starts disabled */
+.btnShareSend {
+    background: #2E7BC4;
+}
+
+/* Disabled state - recipient not yet selected */
+.btnShareSendDisabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* Active state - recipient selected, ready to send */
+.btnShareSendActive {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.shareListItem {
+    padding: 8px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.shareListAvatar {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.shareListItemSelected {
+    background: rgba(46, 123, 196, 0.1);
+}
+
+.shareEmptyMsg {
+    text-align: center;
+    color: #7A96B0;
+    font-size: 13px;
+}
+
+/* ====== Toggle switch (dark mode + mute) ====== */
+
+.chatToggleSwitch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.chatToggleSwitch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.chatToggleSlider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #C8D8EA;
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.chatToggleSlider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: #FFFFFF;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .chatToggleSlider {
+    background: #2E7BC4;
+}
+
+input:checked + .chatToggleSlider:before {
+    transform: translateX(20px);
+}
+
+/* Dark mode */
+
+/* ====== Base ====== */
+body.darkMode {
+    background: #0F1A26;
+    color: #E8F0F8;
+    color-scheme: dark;
+}
+
+/* ====== App body background ====== */
+body.darkMode .appBody {
+    background: #0F1A26;
+    background-image: repeating-linear-gradient(
+        transparent,
+        transparent 31px,
+        #1B2A38 32px
+    );
+}
+
+/* ====== Header ====== */
+body.darkMode .appHeader {
+    background: #1d4168;
+    border-color: #5FA8E8;
+}
+
+body.darkMode .appHeaderBrandName {
+    color: #5FA8E8;
+}
+
+body.darkMode .headerNavBtn {
+    color: #8FA6BC;
+}
+
+body.darkMode .headerNavBtn:hover {
+    background: #1E2D3D;
+    color: #5FA8E8;
+}
+
+body.darkMode .headerNavBtn.activeHeaderNav {
+    color: #5FA8E8;
+    border-bottom-color: #5FA8E8;
+}
+
+body.darkMode .headerNavDivider {
+    background: #5FA8E8;
+}
+
+body.darkMode .btnLogout {
+    color: #8FA6BC;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .btnLogout:hover {
+    border-color: #C0392B;
+    color: #C0392B;
+    background: rgba(192, 57, 43, 0.15);
+}
+
+/* ====== Search bar ====== */
+body.darkMode .headerSearchWrap {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .headerSearchWrap:focus-within {
+    border-color: #5FA8E8;
+    box-shadow: 0 0 0 3px rgba(95, 168, 232, 0.15);
+}
+
+body.darkMode .headerSearchIcon {
+    color: #4A6580;
+}
+
+body.darkMode .headerSearchInput {
+    background: transparent;
+    color: #E8F0F8;
+}
+
+body.darkMode .headerSearchInput::placeholder {
+    color: #4A6580;
+}
+
+/* ====== Left sidebar ====== */
+body.darkMode .sidebarLeft {
+    background: #1d4168;
+    border-color: #5FA8E8;
+}
+
+body.darkMode .sidebarBottom {
+    border-color: #2A3D4F;
+}
+
+body.darkMode .sidebarBtn {
+    color: #6B8FA8;
+}
+
+body.darkMode .sidebarBtn:hover {
+    background: #1E2D3D;
+    color: #5FA8E8;
+}
+
+body.darkMode .sidebarBtn.activeLeftNav {
+    background: rgba(95, 168, 232, 0.12);
+    color: #5FA8E8;
+}
+
+body.darkMode .sidebarBtnImg {
+    opacity: 0.6;
+    filter: brightness(1.5) grayscale(0.2);
+}
+
+/* ====== Right sidebar ====== */
+body.darkMode .sidebarRight {
+    background: #12202E;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .footerLinks,
+body.darkMode .footerCopy {
+    color: #4A6580;
+}
+
+body.darkMode .footerLinks span:hover {
+    color: #5FA8E8;
+}
+
+/* ====== API cards ====== */
+body.darkMode .apiCard {
+    background: #16222F;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .apiCardTitle {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+    color: #8FA6BC;
+}
+
+body.darkMode .apiCardBody {
+    color: #4A6580;
+}
+
+/* ====== Auth screen ====== */
+body.darkMode #authScreen {
+    background-color: #0F1A26;
+    background-image: repeating-linear-gradient(
+        transparent,
+        transparent 30px,
+        #1B2A38 32px
+    );
+}
+
+body.darkMode .authBrand,
+body.darkMode .authCard {
+    background: #16222F;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .authTabs {
+    background: #0F1A26;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .authTab {
+    color: #8FA6BC;
+}
+
+body.darkMode .authTab.activeTab {
+    background: #2E7BC4;
+    color: #FFFFFF;
+}
+
+body.darkMode .authTab:hover:not(.activeTab) {
+    background: #1E2D3D;
+    color: #E8F0F8;
+}
+
+body.darkMode .authBrand h1 {
+    color: #E8F0F8;
+}
+
+/* ====== Section headers ====== */
+body.darkMode .sectionHeader h2 {
+    color: #E8F0F8;
+}
+
+body.darkMode .sectionHeader p {
+    color: #8FA6BC;
+}
+
+body.darkMode .subHeading {
+    color: #E8F0F8;
+}
+
+/* ====== Cards that share the same dark surface ====== */
+body.darkMode .postFormCard,
+body.darkMode .profileCard,
+body.darkMode .settingsCard,
+body.darkMode .composerCard {
+    background: #16222F;
+    border-color: #2A3D4F;
+}
+
+/* ====== Form inputs, selects, textareas ====== */
+/* Targeted individually to avoid overriding button styles */
+body.darkMode .entries input,
+body.darkMode .entries select,
+body.darkMode .entries textarea,
+body.darkMode .postContentArea,
+body.darkMode .composerBtn,
+body.darkMode .uploadTriggerBtn,
+body.darkMode .chatListSearch,
+body.darkMode .chatMessageInput,
+body.darkMode .commentInput {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+    color: #E8F0F8;
+}
+
+body.darkMode .entries input::placeholder,
+body.darkMode .entries textarea::placeholder,
+body.darkMode .chatMessageInput::placeholder,
+body.darkMode .commentInput::placeholder,
+body.darkMode .composerBtn {
+    color: #4A6580;
+}
+
+body.darkMode .entries input:focus,
+body.darkMode .entries select:focus,
+body.darkMode .entries textarea:focus,
+body.darkMode .postContentArea:focus {
+    border-color: #5FA8E8;
+    box-shadow: 0 0 0 3px rgba(95, 168, 232, 0.15);
+}
+
+body.darkMode .entries label {
+    color: #8FA6BC;
+}
+
+/* ====== Toggle switch ====== */
+body.darkMode .chatToggleSlider {
+    background: #2A3D4F;
+}
+
+body.darkMode input:checked + .chatToggleSlider {
+    background: #2E7BC4;
+}
+
+/* ====== Loading box ====== */
+body.darkMode .loadingBox {
+    background: rgba(22, 34, 47, 0.95);
+    border-color: #2A3D4F;
+}
+
+body.darkMode .loadingBox p {
+    color: #8FA6BC;
+}
+
+/* ====== Toast ====== */
+body.darkMode .toastNotif {
+    background: #16222F;
+    border-color: #2A3D4F;
+    color: #E8F0F8;
+}
+
+/* ====== Post cards ====== */
+body.darkMode .postCard {
+    background: #12202E;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .postCardHeader {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .postCardFooterWrap {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .postStarsRow {
+    border-color: #2A3D4F;
+}
+
+body.darkMode .postImageWrap {
+    background: #1E2D3D;
+}
+
+body.darkMode .postAuthorName {
+    color: #E8F0F8;
+}
+
+body.darkMode .postTimestamp,
+body.darkMode .postQuestionRef {
+    color: #4A6580;
+}
+
+body.darkMode .postBody {
+    color: #C8D8EA;
+}
+
+body.darkMode .postMeta {
+    border-color: #2A3D4F;
+}
+
+body.darkMode .postActionBtn {
+    border-color: #2A3D4F;
+    color: #8FA6BC;
+}
+
+body.darkMode .postActionBtn:hover {
+    background: #1E2D3D;
+    color: #5FA8E8;
+    border-color: #5FA8E8;
+}
+
+body.darkMode .btnLikeToggle.likedState {
+    color: #E05555;
+    border-color: #E05555;
+}
+
+body.darkMode .btnSaveToggle.savedState {
+    color: #5FA8E8;
+    border-color: #5FA8E8;
+}
+
+body.darkMode .postCardFooter,
+body.darkMode .commentsPanel.commentsPanelOpen {
+    border-color: #2A3D4F;
+}
+
+body.darkMode .postAuthorNameClickable:hover {
+    color: #5FA8E8;
+}
+
+body.darkMode .postTypeBadge {
+    background: rgba(95, 168, 232, 0.1);
+    border-color: rgba(95, 168, 232, 0.3);
+    color: #5FA8E8;
+}
+
+body.darkMode .postDeleteBtn {
+    color: #4A6580;
+}
+
+body.darkMode .postDeleteBtn:hover {
+    background: rgba(192, 57, 43, 0.15);
+    color: #E05555;
+}
+
+/* ====== Post type pills — dark mode ====== */
+body.darkMode .postTypePill {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+    color: #8FA6BC;
+}
+
+body.darkMode .postTypePill:hover {
+    background: #263D52;
+    border-color: #5FA8E8;
+    color: #E8F0F8;
+}
+
+body.darkMode .postTypeRadio:checked + .postTypePill {
+    background: #2E7BC4;
+    border-color: #2E7BC4;
+    color: #FFFFFF;
+}
+
+body.darkMode .postTypePillText {
+    color: inherit;
+}
+
+body.darkMode .postTypePillSub {
+    color: inherit;
+    opacity: 0.7;
+}
+
+body.darkMode .postTypePillIcon {
+    opacity: 0.8;
+}
+
+body.darkMode .postTypeLabel {
+    color: #8FA6BC;
+}
+
+body.darkMode .postFormCard .entries label {
+    color: #8FA6BC;
+}
+
+/* ====== Post template hint box ====== */
+body.darkMode .postTemplateHint {
+    background: rgba(95, 168, 232, 0.08);
+    border-color: rgba(95, 168, 232, 0.2);
+    color: #8FA6BC;
+}
+
+body.darkMode .postTemplateHint strong {
+    color: #5FA8E8;
+}
+
+/* ====== Star rating ====== */
+body.darkMode .starBtn {
+    color: #2A3D4F;
+}
+
+body.darkMode .starBtn.starFilled,
+body.darkMode .starBtn:hover {
+    color: #F0A500;
+}
+
+body.darkMode .ratingAvg {
+    color: #4A6580;
+}
+
+/* ====== Comments ====== */
+body.darkMode .commentRow {
+    border-color: #2A3D4F;
+}
+
+body.darkMode .commentAuthor {
+    color: #E8F0F8;
+}
+
+body.darkMode .commentText {
+    color: #8FA6BC;
+}
+
+body.darkMode .commentsEmpty {
+    color: #4A6580;
+}
+
+body.darkMode .commentInput {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+    color: #E8F0F8;
+}
+
+body.darkMode .commentSendBtn {
+    background: #1A6BBF;
+}
+
+body.darkMode .commentSendBtn:hover {
+    background: #2E7BC4;
+}
+
+body.darkMode .btnLoadEarlier {
+    color: #5FA8E8;
+}
+
+/* ====== Carousel ====== */
+body.darkMode .postCarouselBtn {
+    background: rgba(22, 34, 47, 0.85);
+    color: #E8F0F8;
+}
+
+body.darkMode .postCarouselBtn:hover {
+    background: #16222F;
+}
+
+/* ====== Profile ====== */
+body.darkMode .profileInfo h3 {
+    color: #E8F0F8;
+}
+
+body.darkMode .profileBioText,
+body.darkMode .profileStatsRow {
+    color: #8FA6BC;
+}
+
+body.darkMode .profileStatNum {
+    color: #E8F0F8;
+}
+
+body.darkMode .profileDividerLine {
+    background: #2A3D4F;
+}
+
+body.darkMode .postsGridItem {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .postsGridItemText {
+    color: #8FA6BC;
+}
+
+/* ====== Profile action row ====== */
+body.darkMode .profileActionRow .btnFollowingState,
+body.darkMode .profileActionRow .btnRequestedState {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+    color: #E8F0F8;
+}
+
+body.darkMode .profileActionRow .btnFollowingState:hover {
+    background: rgba(192, 57, 43, 0.15);
+    color: #E05555;
+    border-color: #5A2A2A;
+}
+
+body.darkMode .profileActionRow .btnMessage {
+    color: #5FA8E8;
+    border-color: #5FA8E8;
+}
+
+body.darkMode .profileActionRow .btnMessage:hover {
+    background: rgba(95, 168, 232, 0.1);
+}
+
+/* ====== Settings ====== */
+body.darkMode .settingsCardTitle {
+    color: #E8F0F8;
+}
+
+body.darkMode .settingsCardSub,
+body.darkMode .settingsRowSub {
+    color: #4A6580;
+}
+
+body.darkMode .settingsRowLabel {
+    color: #E8F0F8;
+}
+
+/* Privacy pills — unselected */
+body.darkMode .privacyPill {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+    color: #E8F0F8;
+}
+
+body.darkMode .privacyPillText {
+    color: #E8F0F8;
+}
+
+body.darkMode .privacyPillSub {
+    color: #8FA6BC;
+}
+
+/* Privacy pills — selected */
+body.darkMode .privacyRadio:checked + .privacyPill {
+    background: #1A6BBF;
+    border-color: #5FA8E8;
+    color: #FFFFFF;
+    box-shadow: 0 6px 16px rgba(95, 168, 232, 0.2);
+}
+
+body.darkMode .privacyRadio:checked + .privacyPill .privacyPillText,
+body.darkMode .privacyRadio:checked + .privacyPill .privacyPillSub {
+    color: #FFFFFF;
+}
+
+/* Follow requests and blocked users */
+body.darkMode .followRequestRow,
+body.darkMode .blockedUserRow {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .followRequestName,
+body.darkMode .blockedUserName {
+    color: #E8F0F8;
+}
+
+/* Danger zone */
+body.darkMode .settingsCardDanger {
+    background: #2A1A1A;
+    border-color: #5A2A2A;
+}
+
+body.darkMode .settingsCardTitleDanger {
+    color: #E05555;
+}
+
+/* ====== Follow request rows ====== */
+body.darkMode .followRequestNameClickable:hover {
+    color: #5FA8E8;
+}
+
+/* ====== Follow tab rows ====== */
+body.darkMode .followTabRow:hover {
+    background: #1E2D3D;
+}
+
+body.darkMode .followTabName {
+    color: #E8F0F8;
+}
+
+body.darkMode .followTabUsername {
+    color: #4A6580;
+}
+
+body.darkMode .followTabEmpty {
+    color: #4A6580;
+}
+
+body.darkMode .followTabAvatar {
+    background: #2E7BC4;
+}
+
+/* ====== Notifications ====== */
+body.darkMode .notifMonthLabel {
+    color: #E8F0F8;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .notifRow:hover {
+    background: #1E2D3D;
+}
+
+body.darkMode .notifRow.unreadNotif {
+    background: rgba(95, 168, 232, 0.08);
+}
+
+body.darkMode .notifAvatarSecondary {
+    background: #4A6580;
+    border-color: #16222F;
+}
+
+body.darkMode .notifTextWrap {
+    color: #E8F0F8;
+}
+
+body.darkMode .notifTimeLabel {
+    color: #4A6580;
+}
+
+body.darkMode .notifActorLink:hover strong {
+    color: #5FA8E8;
+}
+
+body.darkMode .notifFollowBackPill {
+    background: #2E7BC4;
+    color: #FFFFFF;
+}
+
+body.darkMode .notifFollowBackPill:hover {
+    background: #1A5A9A;
+}
+
+body.darkMode .notifFollowBackPill:disabled {
+    background: #2A3D4F;
+    color: #4A6580;
+}
+
+body.darkMode .notifPillDisabled {
+    background: #2A3D4F !important;
+    color: #4A6580 !important;
+}
+
+body.darkMode .notifThumb {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .notifRequestsBanner {
+    border-color: #2A3D4F;
+}
+
+body.darkMode .notifRequestsBanner:hover {
+    background: #1E2D3D;
+}
+
+body.darkMode .notifRequestsIcon {
+    background: rgba(95, 168, 232, 0.1);
+    border-color: rgba(95, 168, 232, 0.25);
+}
+
+body.darkMode .notifRequestsTitle {
+    color: #E8F0F8;
+}
+
+body.darkMode .notifRequestsSub {
+    color: #8FA6BC;
+}
+
+body.darkMode .notifRequestsArrow {
+    color: #4A6580;
+}
+
+/* ====== Modals ====== */
+body.darkMode .appModalCard {
+    background: #16222F;
+    border: 1px solid #2A3D4F;
+}
+
+body.darkMode .appModalTitle {
+    color: #E8F0F8;
+}
+
+body.darkMode .appModalBody {
+    color: #8FA6BC;
+}
+
+body.darkMode .btnConfirmCancel {
+    background: #2A3D4F;
+    color: #E8F0F8;
+}
+
+body.darkMode .btnConfirmCancel:hover {
+    background: #3A4D5F;
+}
+
+body.darkMode .btnLogoutCancel {
+    background: #2A3D4F;
+    color: #E8F0F8;
+}
+
+body.darkMode .btnLogoutCancel:hover {
+    background: #3A4D5F;
+}
+
+body.darkMode .infoModalBody {
+    color: #8FA6BC;
+}
+
+/* ====== Badges ====== */
+body.darkMode .subjectBadge {
+    background: rgba(95, 168, 232, 0.1);
+    border-color: rgba(95, 168, 232, 0.25);
+    color: #5FA8E8;
+}
+
+/* ====== Empty states ====== */
+body.darkMode .emptyState {
+    color: #4A6580;
+}
+
+body.darkMode .emptyIcon {
+    opacity: 0.6;
+}
+
+/* ====== Feed filter / sort ====== */
+body.darkMode .feedFilterBanner {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+    color: #E8F0F8;
+}
+
+body.darkMode .feedFilterClearBtn {
+    background: #16222F;
+    border-color: #2A3D4F;
+    color: #5FA8E8;
+}
+
+body.darkMode .chatBackBanner {
+    border-left-color: #5FA8E8;
+}
+
+body.darkMode .feedSortBtn {
+    background: #16222F;
+    border-color: #2A3D4F;
+    color: #8FA6BC;
+}
+
+body.darkMode .feedSortBtn:hover {
+    border-color: #5FA8E8;
+    color: #5FA8E8;
+}
+
+body.darkMode .feedSortBtnActive {
+    background: #1A6BBF;
+    border-color: #5FA8E8;
+    color: #FFFFFF;
+}
+
+body.darkMode .feedSortBtnActive:hover {
+    background: #2E7BC4;
+    color: #FFFFFF;
+}
+
+body.darkMode .forYouBadge {
+    background: rgba(95, 168, 232, 0.12);
+    border-color: rgba(95, 168, 232, 0.3);
+    color: #5FA8E8;
+}
+
+body.darkMode .feedLoadMoreBtn {
+    background: #1B2836;
+    border-color: #2A3D4F;
+    color: #5FA8E8;
+}
+
+body.darkMode .feedLoadMoreBtn:hover {
+    background: #2E7BC4;
+    color: #FFFFFF;
+}
+
+/* ====== Search results panel ====== */
+body.darkMode .searchResultsPanel {
+    background: #16222F;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .searchPanelEmpty {
+    color: #4A6580;
+}
+
+body.darkMode .searchPanelSectionLabel {
+    color: #4A6580;
+}
+
+body.darkMode .searchPanelRow:hover {
+    background: #1E2D3D;
+}
+
+body.darkMode .searchPanelSubjectRow {
+    border-color: #2A3D4F;
+}
+
+body.darkMode .searchPanelSubjectText {
+    color: #E8F0F8;
+}
+
+body.darkMode .searchPanelUsername {
+    color: #E8F0F8;
+}
+
+body.darkMode .searchPanelFullName {
+    color: #4A6580;
+}
+
+/* ====== Saved / liked counts ====== */
+body.darkMode .savedPostsCount {
+    color: #4A6580;
+}
+
+body.darkMode .likedPostsCount {
+    color: #4A6580;
+}
+
+/* ====== Chat ====== */
+body.darkMode .chatListPanel,
+body.darkMode .chatThreadPanel {
+    background: #16222F;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .chatListHeader {
+    border-color: #2A3D4F;
+}
+
+body.darkMode .chatListTitle {
+    color: #E8F0F8;
+}
+
+body.darkMode .chatListName {
+    color: #E8F0F8;
+}
+
+body.darkMode .chatListPreview {
+    color: #4A6580;
+}
+
+body.darkMode .chatListPreview.unreadPreview {
+    color: #C8D8EA;
+}
+
+body.darkMode .chatListItem:hover {
+    background: #1E2D3D;
+}
+
+body.darkMode .chatListItem.activeChatItem {
+    background: rgba(95, 168, 232, 0.1);
+}
+
+body.darkMode .chatThreadHeader {
+    background: #16222F;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .chatThreadName {
+    color: #E8F0F8;
+}
+
+body.darkMode .chatThreadUsername {
+    color: #4A6580;
+}
+
+body.darkMode .chatEmptyCircle {
+    border-color: #4A6580;
+    color: #4A6580;
+}
+
+body.darkMode .chatEmptyTitle {
+    color: #E8F0F8;
+}
+
+body.darkMode .chatEmptySub {
+    color: #4A6580;
+}
+
+body.darkMode .chatMessages {
+    background: #16222F;
+}
+
+body.darkMode .chatMessage {
+    color: #E8F0F8;
+}
+
+body.darkMode .chatSendBtn {
+    color: #5FA8E8;
+    background: transparent;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .chatSendBtn:hover {
+    color: #E8F0F8;
+    background: #1E2D3D;
+}
+
+body.darkMode .chatMessageInput {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+    color: #E8F0F8;
+}
+
+body.darkMode .chatMessageInput::placeholder {
+    color: #4A6580;
+}
+
+body.darkMode .chatDetailsPanel {
+    background: #12202E;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .chatDetailsPanel.chatDetailsPanelOpen {
+    border-left-color: #2A3D4F;
+}
+
+body.darkMode .chatDetailsHeader {
+    color: #E8F0F8;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .chatDetailsDivider {
+    background: #2A3D4F;
+}
+
+body.darkMode .chatDetailsLabel {
+    color: #E8F0F8;
+}
+
+body.darkMode .chatDetailsAction {
+    border-color: #2A3D4F;
+    color: #8FA6BC;
+}
+
+body.darkMode .chatDetailsAction:hover {
+    background: #1E2D3D;
+    color: #E8F0F8;
+}
+
+body.darkMode .chatDetailsActionDanger {
+    border-color: #5A2A2A;
+    color: #E05555;
+}
+
+body.darkMode .chatDetailsActionDanger:hover {
+    background: #2A1A1A;
+}
+
+body.darkMode .chatInputRow {
+    border-color: #2A3D4F;
+}
+
+body.darkMode .chatDetailsBtn:hover {
+    background: #1E2D3D;
+    color: #5FA8E8;
+}
+
+body.darkMode .chatNoMessages {
+    color: #4A6580;
+}
+
+body.darkMode .chatBubbleReceived .chatBubbleText {
+    background: #1E2D3D;
+    color: #E8F0F8;
+}
+
+body.darkMode .chatBubbleShared .chatBubbleText {
+    background: rgba(95, 168, 232, 0.08);
+    border-color: rgba(95, 168, 232, 0.2);
+    color: #E8F0F8;
+}
+
+body.darkMode .chatBubbleTime {
+    color: #4A6580;
+}
+
+body.darkMode .chatSharedCard {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+}
+
+/* ====== Chat bubble wrapper and actions ====== */
+body.darkMode .chatMsgLikeBtn,
+body.darkMode .chatMsgReplyBtn {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+    color: #8FA6BC;
+}
+
+body.darkMode .chatMsgLikeBtn:hover {
+    background: rgba(192, 57, 43, 0.15);
+    border-color: #E05555;
+    color: #E05555;
+}
+
+body.darkMode .chatMsgReplyBtn:hover {
+    background: rgba(46, 123, 196, 0.15);
+    border-color: #5FA8E8;
+    color: #5FA8E8;
+}
+
+body.darkMode .chatMsgLikeBtnActive {
+    color: #E05555;
+    border-color: #E05555;
+    background: rgba(192, 57, 43, 0.15);
+}
+
+body.darkMode .chatMsgLikeRow {
+    background: #1E2D3D;
+    border-color: #5A2A2A;
+    color: #E05555;
+}
+
+body.darkMode .chatReplyBar {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+}
+
+body.darkMode .chatReplyBarLabel {
+    color: #5FA8E8;
+}
+
+body.darkMode .chatReplyBarText {
+    color: #8FA6BC;
+}
+
+body.darkMode .chatReplyBarCancel {
+    background: #2A3D4F;
+    color: #E8F0F8;
+}
+
+body.darkMode .chatReplyBarCancel:hover {
+    background: #C0392B;
+    color: #FFFFFF;
+}
+
+body.darkMode .chatBubbleReceived .chatReplyQuote {
+    border-left-color: #5FA8E8;
+    background: rgba(95, 168, 232, 0.1);
+}
+
+/* ====== Share modal ====== */
+body.darkMode .shareListItemSelected {
+    background: rgba(95, 168, 232, 0.12);
+}
+
+body.darkMode .shareEmptyMsg {
+    color: #4A6580;
+}
+
+body.darkMode .btnShareSend {
+    background: #2E7BC4;
+}
+
+/* ====== Quote API dark mode ====== */
+body.darkMode .quoteText {
+    color: #E8F0F8;
+}
+
+body.darkMode .quoteAuthor {
+    color: #5FA8E8;
+}
+
+/* On This Day dark mode */
+body.darkMode .otdYear { color: #5FA8E8; }
+body.darkMode .otdEvent { color: #E8F0F8; }
+body.darkMode .otdSource { color: #7A96B0; }
+
+/* Widget 2 - Cambridge-style Question Generator */
+.questionWidgetInputRow {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.questionWidgetInput {
+    flex: 1;
+    padding: 6px 10px;
+    background: #EEF4FB;
+    border: 1px solid #C8D8EA;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #1A2B3C;
+    outline: none;
+    min-width: 0; /* allows the input to shrink inside the flex row */
+}
+
+.questionWidgetInput:focus {
+    border-color: #2E7BC4;
+}
+
+.questionWidgetReloadBtn {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    border: 1px solid #C8D8EA;
+    background: #FFFFFF;
+    color: #2E7BC4;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.questionWidgetReloadBtn:hover {
+    background: #EEF4FB;
+    transform: rotate(45deg);
+}
+
+/* No scrollbar */
+.questionWidgetBody {
+    overflow: hidden;
+}
+
+.questionWidgetHint {
+    font-size: 12px;
+    color: #7A96B0;
+}
+
+.questionWidgetError {
+    font-size: 12px;
+    color: #C0392B;
+}
+
+.questionWidgetSubjectLabel {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(46, 123, 196, 0.1);
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #2E7BC4;
+    margin-bottom: 6px;
+}
+
+.questionWidgetText {
+    font-size: 13px;
+    color: #1A2B3C;
+    line-height: 1.5;
+}
+
+body.darkMode .questionWidgetInput {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+    color: #E8F0F8;
+}
+
+body.darkMode .questionWidgetReloadBtn {
+    background: #16222F;
+    border-color: #2A3D4F;
+    color: #5FA8E8;
+}
+
+body.darkMode .questionWidgetHint {
+    color: #4A6580;
+}
+
+body.darkMode .questionWidgetSubjectLabel {
+    background: rgba(95, 168, 232, 0.12);
+    color: #5FA8E8;
+}
+
+body.darkMode .questionWidgetText {
+    color: #E8F0F8;
+}
+EOF
+Output
+
+/* ====== AI practice questions ====== */
+body.darkMode .questionWidgetInput {
+    background: #1E2D3D;
+    border-color: #2A3D4F;
+    color: #E8F0F8;
+}
+
+body.darkMode .questionWidgetReloadBtn {
+    background: #16222F;
+    border-color: #2A3D4F;
+    color: #5FA8E8;
+}
+
+body.darkMode .questionWidgetHint {
+    color: #4A6580;
+}
+
+body.darkMode .questionWidgetSubjectLabel {
+    background: rgba(95, 168, 232, 0.12);
+    color: #5FA8E8;
+}
+
+body.darkMode .questionWidgetText {
+    color: #E8F0F8;
+}
+
+body.darkMode .questionWidgetSendBtn {
+    background: #1A6BBF;
+}
+
+body.darkMode .questionWidgetSendBtn:hover {
+    background: #2E7BC4;
+}

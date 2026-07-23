@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A-level Hub</title>
+    <!--Link to CSS file-->
+    <link rel="stylesheet" href="./Frontend/CSS/styles.css">
+</head>
+
+<body>
+    <!-- Loading Overlay - waiting for a long operation to end -->
+    <div class="modal" id="loadingOverlay">
+        <div class="loadingBox">
+            <div class="spinner"></div>
+            <p id="loadingMsg">Loading…</p>
+        </div>
+    </div>
+
+    <!-- ====== Toast notification ====== -->
+    <div id="toastNotif" class="toastNotif"></div>
+
+    <!-- ====== Authentication Screen ====== -->
+    <div id="authScreen">
+        <div class="authBrand">
+            <img src="./Frontend/Assets/logo.png" class="logo" alt="A-level Hub Logo">
+            <div class="authBrandText">
+                <h1>A-level Hub</h1>
+                <p id="p1">Ace Your Classes with Expert Notes and Step-by-Step Solutions.</p>
+                <p id="p2">BY STUDENTS, FOR STUDENTS.</p>
+            </div>
+        </div>
+
+        <div class="authCard">
+
+            <!-- To switch between login and register-->
+            <div class="authTabs">
+                <button id="tabLoginBtn" class="authTab activeTab" onclick="showLoginTab()">Log in</button>
+                <button id="tabRegisterBtn" class="authTab" onclick="showRegisterTab()">Register</button>
+            </div>
+
+            <!-- ====== Login form ====== -->
+            <form id="loginForm" class="authForm activeForm" onsubmit="handleLogin(event)">
+
+                <div class="entries">
+                    <label for="loginUsername">Username</label>
+                    <input type="text" id="loginUsername" placeholder="Enter username" autocomplete="off">
+                </div>
+
+                <div class="entries">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password">
+                </div>
+
+                <p id="loginMessage" class="inlineMsg"></p>
+
+                <button type="submit" class="btnPrimary">Log In</button>
+
+                <p class="switchText">No account? <span onclick="showRegisterTab()">Register here</span></p>
+
+            </form>
+
+            <!-- ====== Register form ====== -->
+            <form id="registerForm" class="authForm" onsubmit="handleRegister(event)">
+
+                <div class="entriesRow">
+                    <div class="entries">
+                        <label for="regFirstName">First Name</label>
+                        <input type="text" id="regFirstName" placeholder="Enter first name" autocomplete="off">
+                    </div>
+                    <div class="entries">
+                        <label for="regLastName">Last Name</label>
+                        <input type="text" id="regLastName" placeholder="Enter last name" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="entries">
+                    <label for="regUsername">Username</label>
+                    <input type="text" id="regUsername" placeholder="Enter username" autocomplete="off">
+                </div>
+
+                <div class="entries">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" placeholder="Enter email (xyz@example.com)" autocomplete="off">
+                </div>
+
+                <div class="entries">
+                    <label for="regFavSubject">Favourite Subject</label>
+                    <select id="regFavSubject">
+                        <option value="">Select favourite subject…</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Additional Mathematics">Additional Mathematics</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Biology">Biology</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Economics">Economics</option>
+                        <option value="Accounts">Accounts</option>
+                        <option value="General Paper">General Paper</option>
+                        <option value="French">French</option>
+                        <option value="English Literature">English Literature</option>
+                        <option value="French Literature">French Literature</option>
+                    </select>
+                </div>
+
+                <div class="entriesRow">
+                    <div class="entries">
+                        <label for="regAge">Age</label>
+                        <input type="number" id="regAge" placeholder="Enter age" min="1" max="100">
+                    </div>
+
+                    <div class="entries">
+                        <label>Gender</label>
+                        <select id="regGender">
+                            <option value="">Select gender…</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                            <option value="Prefer not to say">Prefer not to say</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="entries">
+                    <label for="regPassword">Password</label>
+                    <input type="password" id="regPassword" placeholder="Enter Password (Min. 8 char)">
+                </div>
+
+                <p id="registerMessage" class="inlineMsg"></p>
+
+                <button type="submit" class="btnPrimary">Create Account</button>
+
+                <p class="switchText">Have an account? <span onclick="showLoginTab()">Log in</span></p>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- ====== Main page (shown after login) ====== -->
+    <div id="homeShell" class="homeShellHidden">
+
+        <!-- ====== Fixed top navigation bar ====== -->
+        <header class="appHeader">
+
+            <!-- Left: Logo + site name -->
+            <div class="appHeaderLeft">
+                <img src="./Frontend/Assets/logo.png" class="headerLogo" alt="A-level Hub Logo">
+                <span class="appHeaderBrandName">A-level Hub</span>
+            </div>
+
+            <!-- Center: Search bar -->
+            <div class="appHeaderCenter">
+                <div class="headerSearchWrap">
+                    <span class="headerSearchIcon">⌕</span>
+                    <input
+                        type="text"
+                        id="globalSearchInput"
+                        class="headerSearchInput"
+                        placeholder="Search students, solutions, subjects…"
+                        oninput="handleSearchInput()"
+                        autocomplete="off"
+                    >
+                </div>
+                <div id="searchResultsPanel" class="searchResultsPanel searchResultsHidden"></div>
+            </div>
+
+            <!-- Right: Nav icons + avatar -->
+            <div class="appHeaderRight">
+
+                <!-- Home feed -->
+                <button class="headerNavBtn activeHeaderNav" id="headerNavFeed" onclick="showSection('feed')" title="Feed">
+                    <span class="headerNavIcon">⊞</span>
+                    <span class="headerNavLabel">Home</span>
+                </button>
+
+                <!-- Post a solution -->
+                <button class="headerNavBtn" id="headerNavPost" onclick="showSection('post')" title="Post Solution">
+                    <span class="headerNavIcon">✎</span>
+                    <span class="headerNavLabel">Post</span>
+                </button>
+
+                <button class="headerNavBtn" id="headerNavChat" onclick="showSection('chat')" title="Messages">
+                    <span class="headerNavIcon">
+                        💬
+                        <span class="unreadDot" id="headerChatDot" class="unreadDotHidden"></span>
+                    </span>
+                    <span class="headerNavLabel">Chat</span>
+                </button>
+
+                <!-- Notifications -->
+                <button class="headerNavBtn" id="headerNavNotifications"
+                        onclick="showSection('notifications')" title="Notifications">
+                    <span class="headerNavIcon">
+                        🔔
+                        <span class="unreadDot" id="headerNotifDot" class="unreadDotHidden"></span>
+                    </span>
+                    <span class="headerNavLabel">Notifications</span>
+                </button>
+
+                <!-- Divider -->
+                <div class="headerNavDivider"></div>
+
+                <!-- User avatar + logout -->
+                <div class="headerUserPill" onclick="goToMyProfile()">
+                    <div class="headerAvatar" id="headerAvatar">?</div>
+                </div>
+
+                <button class="btnLogout" onclick="showLogoutModal()">Logout</button>
+
+            </div>
+        </header>
+
+        <!-- ====== Three-column body layout ====== -->
+        <div class="appBody">
+
+            <!-- ====== Left sidebar ====== -->
+            <aside class="sidebarLeft">
+                <!-- Nav items -->
+                <nav class="sidebarNav">
+
+                    <button class="sidebarBtn activeLeftNav" id="leftNavFeed" onclick="showSection('feed')">
+                        <span class="sidebarBtnIcon">
+                            <img src="./Frontend/Assets/home.png" class="sidebarBtnImg" alt="Home">
+                        </span>
+                        <span class="sidebarBtnLabel">Home</span>
+                    </button>
+
+                    <button class="sidebarBtn" id="leftNavSaved" onclick="showSection('saved')">
+                        <span class="sidebarBtnIcon">
+                            <img src="./Frontend/Assets/saved.png" class="sidebarBtnImg" alt="Saved">
+                        </span>
+                        <span class="sidebarBtnLabel">Saved Posts</span>
+                    </button>
+
+                    <button class="sidebarBtn" id="leftNavLiked" onclick="showSection('liked')">
+                        <span class="sidebarBtnIcon" id="likesBtn">
+                            <img src="./Frontend/Assets/likes.png" class="sidebarBtnImg" alt="Likes">
+                        </span>
+                        <span class="sidebarBtnLabel">Liked Posts</span>
+                    </button>
+
+                    <button class="sidebarBtn" id="leftNavChat" onclick="showSection('chat')">
+                        <span class="sidebarBtnIcon">
+                            <img src="./Frontend/Assets/chat.png" class="sidebarBtnImg" alt="Chat">
+                            <span class="unreadDot" id="sidebarChatDot" class="unreadDotHidden"></span>
+                        </span>
+                        <span class="sidebarBtnLabel">Chats</span>
+                    </button>
+
+                    <button class="sidebarBtn" id="leftNavProfile" onclick="goToMyProfile()">
+                        <span class="sidebarBtnIcon" id="profileBtn">
+                            <img src="./Frontend/Assets/profile.png" class="sidebarBtnImg" alt="Profile">
+                        </span>
+                        <span class="sidebarBtnLabel">Your Profile</span>
+                    </button>
+
+                </nav>
+                <!-- Settings pinned at the bottom -->
+                <div class="sidebarBottom">
+                    <button class="sidebarBtn" id="leftNavSettings" onclick="showSection('settings')">
+                        <span class="sidebarBtnIcon">
+                            <img src="./Frontend/Assets/settings.png" class="sidebarBtnImg" alt="Settings">
+                        </span>
+                        <span class="sidebarBtnLabel">Settings</span>
+                    </button>
+                </div>
+
+            </aside>
+
+            <!-- ====== Centre - main content ====== -->
+            <main class="appMain" id="mainContent">
+
+                <!-- ====== Feed Section ====== -->
+                <section id="sectionFeed" class="section">
+                    <div class="sectionHeader">
+                        <h2>Your Feed</h2>
+                        <p>Solutions posted by students you follow</p>
+                    </div>
+
+                    <!-- Feed sort toggle -->
+                    <div class="feedSortBar">
+                        <button class="feedSortBtn feedSortBtnActive" id="feedSortForYou"
+                                onclick="setFeedSort('forYou')">✦ For You</button>
+                        <button class="feedSortBtn" id="feedSortLatest"
+                                onclick="setFeedSort('latest')">🕐 Latest</button>
+                    </div>
+
+                    <!-- Post composer shortcut card -->
+                    <div class="composerCard">
+                        <div class="composerAvatar" id="composerAvatar">?</div>
+                        <button class="composerBtn" onclick="showSection('post')">
+                            Share a solution or ask for help…
+                        </button>
+                    </div>
+
+                    <!-- Feed posts list -->
+                    <div id="feedList" class="postList">
+                        <div class="emptyState">
+                            <p class="emptyIcon">📭</p>
+                            <p>Follow other students to see their solutions here.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====== Post Solution Section ====== -->
+                <section id="sectionPost" class="section">
+                    <div class="sectionHeader">
+                        <h2>Create a Post</h2>
+                        <p>Share solutions, questions or notes with the community</p>
+                    </div>
+
+                    <form id="postForm" class="postFormCard" onsubmit="handlePostSubmit(event)">
+
+                        <!-- ====== Post type selector ====== -->
+                        <div class="postTypeSection">
+                            <label class="postTypeLabel">What are you posting?</label>
+                            <div class="postTypePills">
+
+                                <input type="radio" name="postType" id="typeQuestion" value="question" class="postTypeRadio">
+                                <label for="typeQuestion" class="postTypePill">
+                                    <span class="postTypePillIcon">❓</span>
+                                    <span class="postTypePillText">Question</span>
+                                    <span class="postTypePillSub">Ask for help</span>
+                                </label>
+
+                                <input type="radio" name="postType" id="typeSolution" value="solution" class="postTypeRadio" checked>
+                                <label for="typeSolution" class="postTypePill">
+                                    <span class="postTypePillIcon">✓</span>
+                                    <span class="postTypePillText">Solution</span>
+                                    <span class="postTypePillSub">Share an answer</span>
+                                </label>
+
+                                <input type="radio" name="postType" id="typeNote" value="note" class="postTypeRadio">
+                                <label for="typeNote" class="postTypePill">
+                                    <span class="postTypePillIcon">📄</span>
+                                    <span class="postTypePillText">Note</span>
+                                    <span class="postTypePillSub">Share study notes</span>
+                                </label>
+
+                            </div>
+                        </div>
+
+                        <!-- ====== Subject + Question Reference ====== -->
+                        <div class="entriesRow">
+                            <div class="entries">
+                                <label for="postSubject">Subject</label>
+                                <select id="postSubject">
+                                    <option value="">Select subject…</option>
+                                    <option value="Mathematics">Mathematics</option>
+                                    <option value="Additional Mathematics">Additional Mathematics</option>
+                                    <option value="Physics">Physics</option>
+                                    <option value="Chemistry">Chemistry</option>
+                                    <option value="Biology">Biology</option>
+                                    <option value="Computer Science">Computer Science</option>
+                                    <option value="Economics">Economics</option>
+                                    <option value="Accounts">Accounts</option>
+                                    <option value="General Paper">General Paper</option>
+                                    <option value="French">French</option>
+                                    <option value="English Literature">English Literature</option>
+                                    <option value="French Literature">French Literature</option>
+                                </select>
+                            </div>
+                            <div class="entries">
+                                <label for="postQuestion" id="postQuestionLabel">Question Reference</label>
+                                <input type="text" id="postQuestion" placeholder="e.g. Oct 2023 Paper 12, Q4(b)">
+                            </div>
+                        </div>
+
+                        <!-- ====== Dynamic template hint ====== -->
+                        <div class="postTemplateHint" id="postTemplateHint"></div>
+
+                        <!-- ====== Content text area ====== -->
+                        <div class="entries">
+                            <label for="postContent" id="postContentLabel">Your Content</label>
+                            <textarea
+                                id="postContent"
+                                class="postContentArea"
+                                placeholder="Write your solution here…"
+                            ></textarea>
+                        </div>
+
+                        <!-- ====== Image upload area ====== -->
+                        <div class="entries">
+                            <label>Attach Images <span class="uploadLimit">Up to 10 images</span></label>
+
+                            <input
+                                type="file"
+                                id="postImages"
+                                accept="image/*"
+                                multiple
+                                class="fileInputHidden"
+                                onchange="handleMultiFileSelect(event)"
+                            >
+
+                            <button type="button" class="uploadTriggerBtn" onclick="document.getElementById('postImages').click()">
+                                <span class="uploadTriggerIcon">
+                                    <img src="./Frontend/Assets/upload.png" class="sidebarBtnImg" alt="Upload">
+                                </span>
+                                <span>Choose images from your computer</span>
+                            </button>
+
+                            <div id="imagePreviewStrip" class="imagePreviewStrip"></div>
+                            <p id="imageCountLabel" class="imageCountLabel"></p>
+                        </div>
+
+                        <p id="postMessage" class="inlineMsg"></p>
+
+                        <button type="submit" class="btnPrimary">Publish Post</button>
+
+                    </form>
+                </section>
+
+                <!-- ====== Chat Section ====== -->
+                <section id="sectionChat" class="section">
+                    <div class="chatLayout">
+
+                        <!-- LEFT: conversation list -->
+                        <div class="chatListPanel">
+
+                            <div class="chatListHeader">
+                                <span class="chatListTitle">Chats</span>
+                                <input
+                                    type="text"
+                                    id="chatSearchInput"
+                                    class="chatListSearch"
+                                    placeholder="Search"
+                                    oninput="filterChatList()"
+                                >
+                            </div>
+
+                            <div id="chatConversationList" class="chatConversationList">
+                                <div class="emptyState">
+                                    <p class="emptyIcon">💬</p>
+                                    <p>No conversations yet.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT: active thread or empty state -->
+                        <div class="chatThreadPanel" id="chatThreadPanel">
+
+                            <!-- Empty state -->
+                            <div class="chatThreadEmpty" id="chatThreadEmpty">
+                                <div class="chatEmptyCircle">➤</div>
+                                <h3 class="chatEmptyTitle">Your messages</h3>
+                                <p class="chatEmptySub">Send a message to start a chat.</p>
+                            </div>
+
+                            <!-- Active conversation -->
+                            <div class="chatThreadActive" id="chatThreadActive" class="chatThreadActiveHidden">
+
+                                <div class="chatThreadHeader">
+                                    <div class="chatThreadHeaderLeft">
+                                        <div class="chatThreadAvatar" id="chatThreadAvatar">?</div>
+                                        <div class="chatThreadHeaderInfo">
+                                            <span id="chatThreadName" class="chatThreadName">-</span>
+                                            <span id="chatThreadUsername" class="chatThreadUsername">—</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Info/details toggle -->
+                                    <button class="chatDetailsBtn" id="chatDetailsBtn" onclick="toggleChatDetails()" title="Conversation details">
+                                        ⓘ
+                                    </button>
+                                </div>
+
+                                <div class="chatThreadBody">
+
+                                    <div class="chatMessages" id="chatMessages"></div>
+
+                                    <!-- Details side panel -->
+                                    <div class="chatDetailsPanel" id="chatDetailsPanel">
+
+                                        <div class="chatDetailsHeader">Details</div>
+
+                                        <div class="chatDetailsRow chatMuteRow">
+                                            <span class="chatDetailsIcon">🔔</span>
+                                            <span class="chatDetailsLabel">Mute messages</span>
+                                            <label class="chatToggleSwitch">
+                                                <input type="checkbox" id="chatMuteToggle" onchange="toggleMuteChat()">
+                                                <span class="chatToggleSlider"></span>
+                                            </label>
+                                        </div>
+
+                                        <div class="chatDetailsDivider"></div>
+
+                                        <div class="chatDetailsSectionLabel">Information</div>
+                                        <div class="chatDetailsMember">
+                                            <div class="chatDetailsMemberAvatar" id="chatDetailsAvatar">?</div>
+                                            <div class="chatDetailsMemberInfo">
+                                                <span id="chatDetailsName" class="chatDetailsMemberName">—</span>
+                                                <span id="chatDetailsUsername" class="chatDetailsMemberUsername">—</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="chatDetailsDivider"></div>
+
+                                        <button class="chatDetailsAction" onclick="blockChatUser()">Block</button>
+                                        <button class="chatDetailsAction chatDetailsActionDanger" onclick="deleteChatConversation()">Delete chat</button>
+
+                                    </div>
+
+                                </div>
+
+                                <form class="chatInputRow" id="chatInputForm" onsubmit="sendChatMessage(event)">
+                                    <input
+                                        type="text"
+                                        id="chatMessageInput"
+                                        class="chatMessageInput"
+                                        placeholder="Message..."
+                                        autocomplete="off"
+                                    >
+                                    <button type="submit" class="chatSendBtn" title="Send">➤</button>
+                                </form>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+
+                <!-- ====== Profile Section ====== -->
+                <section id="sectionProfile" class="section">
+                    <div class="sectionHeader">
+                        <h2>My Profile</h2>
+                        <p>Your account and posted solutions</p>
+                    </div>
+
+                    <div class="profileCard">
+
+                        <!-- Avatar with + overlay to change picture -->
+                        <div class="profileAvatarWrap">
+                            <div class="profileAvatarLarge" id="profileAvatarLarge">?</div>
+                            <button class="avatarChangeBtn" id="avatarChangeBtn" title="Change profile picture">+</button>
+                            <input type="file" id="avatarFileInput" accept="image/*" class="fileInputHidden">
+                        </div>
+
+                        <!-- Username, stats, bio -->
+                        <div class="profileInfo">
+                            <h3 id="profileName">-</h3>
+
+                            <div class="profileStatsRow">
+                                <span class="profileStatItem" onclick="openFollowersModal('followers')" style="cursor:pointer;">
+                                    <span id="statFollowers" class="profileStatNum">0</span> Followers
+                                </span>
+                                <span class="profileStatDivider">|</span>
+                                <span class="profileStatItem" onclick="openFollowersModal('following')" style="cursor:pointer;">
+                                    <span id="statFollowing" class="profileStatNum">0</span> Following
+                                </span>
+                            </div>
+
+                            <p id="profileBio" class="profileBioText">No bio added yet.</p>
+
+                            <div id="profileActionRow" class="profileActionRow"></div>
+                        </div>
+
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="profileDividerLine"></div>
+
+                    <!-- Posts grid - 3 columns -->
+                    <h3 class="subHeading">My Posts</h3>
+                    <div id="myPostsGrid" class="postsGrid">
+                        <div class="emptyState">
+                            <p class="emptyIcon">📝</p>
+                            <p>You haven't posted anything yet.</p>
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- ====== Settings Section ====== -->
+                <section id="sectionSettings" class="section activeSection">
+                    <div class="sectionHeader">
+                        <h2>Settings</h2>
+                        <p>Manage your account, privacy and appearance</p>
+                    </div>
+
+                    <div class="settingsLayout">
+
+                        <!-- ====== Appearance (Light/Dark) ====== -->
+                        <div class="settingsCard">
+                            <h3 class="settingsCardTitle">Appearance</h3>
+
+                            <div class="settingsRow">
+                                <div class="settingsRowText">
+                                    <span class="settingsRowLabel">Dark mode</span>
+                                    <span class="settingsRowSub">Switch the whole app to a dark color scheme</span>
+                                </div>
+                                <label class="chatToggleSwitch">
+                                    <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                                    <span class="chatToggleSlider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- ====== Account Privacy ====== -->
+                        <div class="settingsCard">
+                            <h3 class="settingsCardTitle">Account Privacy</h3>
+                            <p class="settingsCardSub">Control who can follow you and see your posts</p>
+
+                            <div class="privacyOptions">
+
+                                <input type="radio" name="accountPrivacy" id="privacyPublic" value="public" class="privacyRadio">
+                                <label for="privacyPublic" class="privacyPill">
+                                    <span class="privacyPillIcon">🌐</span>
+                                    <span class="privacyPillText">Public</span>
+                                    <span class="privacyPillSub">Anyone can follow you instantly</span>
+                                </label>
+
+                                <input type="radio" name="accountPrivacy" id="privacyPrivate" value="private" class="privacyRadio">
+                                <label for="privacyPrivate" class="privacyPill">
+                                    <span class="privacyPillIcon">🔒</span>
+                                    <span class="privacyPillText">Private</span>
+                                    <span class="privacyPillSub">You must approve each follow request</span>
+                                </label>
+
+                            </div>
+                        </div>
+
+                        <!-- ====== Follow Requests (only relevant when private) ====== -->
+                        <div class="settingsCard followRequestsCardHidden" id="followRequestsCard">
+                            <h3 class="settingsCardTitle">Follow Requests</h3>
+                            <p class="settingsCardSub">People who want to follow you</p>
+
+                            <div id="followRequestsList" class="followRequestsList">
+                                <div class="emptyState">
+                                    <p class="emptyIcon">👥</p>
+                                    <p>No pending follow requests.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ====== Edit Profile ====== -->
+                        <div class="settingsCard">
+                            <h3 class="settingsCardTitle">Edit Profile</h3>
+
+                            <form id="editProfileForm" class="settingsForm" onsubmit="handleEditProfile(event)">
+
+                                <div class="entriesRow">
+                                    <div class="entries">
+                                        <label for="editFirstName">First name</label>
+                                        <input type="text" id="editFirstName">
+                                    </div>
+                                    <div class="entries">
+                                        <label for="editLastName">Last name</label>
+                                        <input type="text" id="editLastName">
+                                    </div>
+                                </div>
+
+                                <div class="entries">
+                                    <label for="editBio">Bio</label>
+                                    <input type="text" id="editBio" placeholder="Tell others about yourself…">
+                                </div>
+
+                                <div class="entries">
+                                    <label for="editFavSubject">Favourite Subject</label>
+                                    <select id="editFavSubject">
+                                        <option value="">Select favourite subject…</option>
+                                        <option value="Mathematics">Mathematics</option>
+                                        <option value="Additional Mathematics">Additional Mathematics</option>
+                                        <option value="Physics">Physics</option>
+                                        <option value="Chemistry">Chemistry</option>
+                                        <option value="Biology">Biology</option>
+                                        <option value="Computer Science">Computer Science</option>
+                                        <option value="Economics">Economics</option>
+                                        <option value="Accounts">Accounts</option>
+                                        <option value="General Paper">General Paper</option>
+                                        <option value="French">French</option>
+                                        <option value="English Literature">English Literature</option>
+                                        <option value="French Literature">French Literature</option>
+                                    </select>
+                                </div>
+
+                                <p id="editProfileMessage" class="inlineMsg"></p>
+                                <button type="submit" class="btnPrimary">Save Changes</button>
+
+                            </form>
+                        </div>
+
+                        <!-- ====== Change Password ====== -->
+                        <div class="settingsCard">
+                            <h3 class="settingsCardTitle">Change Password</h3>
+
+                            <form id="changePasswordForm" class="settingsForm" onsubmit="handleChangePassword(event)">
+
+                                <div class="entries">
+                                    <label for="currentPassword">Current password</label>
+                                    <input type="password" id="currentPassword">
+                                </div>
+                                <div class="entries">
+                                    <label for="newPassword">New password</label>
+                                    <input type="password" id="newPassword">
+                                </div>
+
+                                <p id="changePasswordMessage" class="inlineMsg"></p>
+                                <button type="submit" class="btnPrimary">Update Password</button>
+
+                            </form>
+                        </div>
+
+                        <!-- Rating reviews -->
+                        <div class="settingsCard" id="ratingBreakdownCard">
+                            <h3 class="settingsCardTitle">My Post Ratings</h3>
+                            <p class="settingsCardSub">How your posts have been rated by other students</p>
+                            <div id="ratingBreakdownList" class="followRequestsList"></div>
+                        </div>
+
+                        <!-- ====== Blocked Users ====== -->
+                        <div class="settingsCard">
+                            <h3 class="settingsCardTitle">Blocked Users</h3>
+                            <p class="settingsCardSub">People you've blocked can't message or follow you</p>
+
+                            <div id="blockedUsersList" class="blockedUsersList">
+                                <div class="emptyState">
+                                    <p class="emptyIcon">🚫</p>
+                                    <p>You haven't blocked anyone.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ====== Account Deletion ====== -->
+                        <div class="settingsCard settingsCardDanger">
+                            <h3 class="settingsCardTitle settingsCardTitleDanger">Danger Zone</h3>
+                            <p class="settingsCardSub">This action is permanent and cannot be undone</p>
+                            <button class="btnDanger" onclick="confirmDeleteAccount()">Delete my account</button>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- Notification panel-->
+                <section id="sectionNotifications" class="section">
+                    <div class="sectionHeader">
+                        <h2>Notifications</h2>
+                        <p>Follows, likes, comments and ratings on your posts</p>
+                    </div>
+                    <div id="notificationsList" class="notificationsList">
+                        <div class="emptyState">
+                            <p class="emptyIcon">🔔</p>
+                            <p>No notifications yet.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Liked Posts Section -->
+                <section id="sectionLiked" class="section">
+                    <div class="sectionHeader">
+                        <h2>Liked Posts</h2>
+                        <p>Posts you have liked, most recent first</p>
+                    </div>
+                    <div id="likedPostsList"></div>
+                </section>
+
+                <!-- Saved Posts Section -->
+                <section id="sectionSaved" class="section">
+                    <div class="sectionHeader">
+                        <h2>Saved Posts</h2>
+                        <p>Posts you have saved, most recent first</p>
+                    </div>
+                    <div id="savedPostsList"></div>
+                </section>
+
+            </main>
+
+            <!-- ====== Right Sidebar ====== -->
+            <aside class="sidebarRight">
+
+                <div class="apiCard" id="apiCard1">
+                    <div class="apiCardTitle">Quote of the Day</div>
+                    <div class="apiCardBody"></div>
+                </div>
+
+                <div class="apiCard" id="apiCard2">
+                    <div class="apiCardTitle">On this Day</div>
+                    <div class="apiCardBody"></div>
+                </div>
+
+                <div class="apiCard" id="apiCard3">
+                    <div class="apiCardTitle">Practice Question</div>
+                    <div class="apiCardBody"></div>
+                </div>
+
+                <!-- Footer links -->
+                <div class="rightFooter">
+                    <p class="footerLinks">
+                        <span onclick="openInfoModal('about')">About</span> ·
+                        <span onclick="openInfoModal('privacy')">Privacy</span> ·
+                        <span onclick="openInfoModal('terms')">Terms</span>
+                    </p>
+                    <p class="footerCopy">A-level Hub © 2026</p>
+                </div>
+            </aside>
+
+            <!-- ====== About / Privacy / Terms Modal ====== -->
+            <div class="modal" id="infoModal">
+                <div class="appModalCard">
+                    <button class="modalCloseBtn" onclick="closeInfoModal()">✕</button>
+                    <h2 class="appModalTitle" id="infoModalTitle">—</h2>
+                    <p class="appModalBody" id="infoModalBody">—</p>
+                    <div class="appModalBtns">
+                        <button class="btnConfirmCancel" onclick="closeInfoModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ====== Logout Confirmation Modal ====== -->
+        <div class="modal" id="logoutModal">
+            <div class="appModalCard">
+                <button class="modalCloseBtn" onclick="closeLogoutModal()">✕</button>
+                <h2 class="appModalTitle">Logout</h2>
+                <p class="appModalBody appModalBodyCentered">Are you sure you want to logout?</p>
+                <div class="appModalBtns">
+                    <button class="btnConfirmDanger" onclick="confirmLogout()">Yes</button>
+                    <button class="btnConfirmCancel" onclick="closeLogoutModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== Delete Account Confirmation Modal ====== -->
+        <div class="modal" id="deleteAccountModal">
+            <div class="appModalCard">
+                <button class="modalCloseBtn" onclick="closeDeleteAccountModal()">✕</button>
+                <h2 class="appModalTitle">Delete Account</h2>
+                <p class="appModalBody appModalBodyCentered">
+                    This is permanent and cannot be undone. All your posts will also be deleted.
+                </p>
+                <div class="appModalBtns">
+                    <button class="btnConfirmDanger" onclick="deleteAccount()">Delete</button>
+                    <button class="btnConfirmCancel" onclick="closeDeleteAccountModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Chat Confirmation Modal -->
+        <div class="modal" id="deleteChatModal">
+            <div class="appModalCard">
+                <button class="modalCloseBtn" onclick="closeDeleteChatModal()">✕</button>
+                <h2 class="appModalTitle">Delete Chat</h2>
+                <p class="appModalBody appModalBodyCentered">
+                    This conversation will be permanently deleted.
+                </p>
+                <div class="appModalBtns">
+                    <button class="btnConfirmDanger" onclick="confirmDeleteChat()">Delete</button>
+                    <button class="btnConfirmCancel" onclick="closeDeleteChatModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Post Confirmation Modal -->
+        <div class="modal" id="deletePostModal">
+            <div class="appModalCard">
+                <button class="modalCloseBtn" onclick="closeDeletePostModal()">✕</button>
+                <h2 class="appModalTitle">Delete Post</h2>
+                <p class="appModalBody appModalBodyCentered">
+                    This post will be permanently deleted. This cannot be undone.
+                </p>
+                <div class="appModalBtns">
+                    <button class="btnConfirmDanger" onclick="confirmDeletePost()">Delete</button>
+                    <button class="btnConfirmCancel" onclick="closeDeletePostModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Share Post Modal -->
+        <div class="modal" id="sharePostModal">
+            <div class="appModalCard shareModalCard">
+                <button class="modalCloseBtn" onclick="closeShareModal()">✕</button>
+                <h2 class="appModalTitle">Share post</h2>
+                <input
+                    type="text"
+                    id="shareSearchInput"
+                    class="chatListSearch shareSearchInput"
+                    placeholder="Search followers…"
+                    oninput="filterShareList()"
+                >
+                <div id="shareUserList" class="shareUserList"></div>
+                <div class="appModalBtns">
+                    <button class="btnConfirmCancel" onclick="closeShareModal()">Cancel</button>
+                    <button class="btnConfirmDanger btnShareSend" id="shareSendBtn"
+                            onclick="confirmShare()">
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Avatar Options Modal -->
+        <div class="modal" id="avatarOptionsModal">
+            <div class="appModalCard">
+                <button class="modalCloseBtn" onclick="closeAvatarOptionsModal()">✕</button>
+                <h2 class="appModalTitle">Profile Picture</h2>
+                <p class="appModalBody appModalBodyCentered">
+                    You already have a profile picture. What would you like to do?
+                </p>
+                <div class="appModalBtns">
+                    <button class="btnConfirmDanger" onclick="removeAvatarPicture()">Remove</button>
+                    <button class="btnConfirmCancel" onclick="changeAvatarPicture()">Change</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Followers / Following Modal -->
+        <div class="modal" id="followersModal">
+            <div class="appModalCard followersModalCard">
+                <button class="modalCloseBtn" onclick="closeFollowersModal()">✕</button>
+                <h2 class="appModalTitle" id="followersModalTitle">Connections</h2>
+
+                <!-- Tabs -->
+                <div class="authTabs followersModalTabs">
+                    <button class="authTab activeTab" id="tabFollowers" onclick="switchFollowTab('followers')">
+                        Followers
+                    </button>
+                    <button class="authTab" id="tabFollowing" onclick="switchFollowTab('following')">
+                        Following
+                    </button>
+                </div>
+
+                <!-- List -->
+                <div id="followTabList" class="followTabList"></div>
+
+                <div class="appModalBtns followersModalBtns">
+                    <button class="btnConfirmCancel" onclick="closeFollowersModal()">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== Block User Confirmation Modal ====== -->
+        <div class="modal" id="blockUserModal">
+            <div class="appModalCard">
+                <button class="modalCloseBtn" onclick="closeBlockModal()">✕</button>
+                <h2 class="appModalTitle">Block user</h2>
+                <p class="appModalBody appModalBodyCentered" id="blockModalBody">
+                    Are you sure you want to block this user?
+                </p>
+                <div class="appModalBtns">
+                    <button class="btnConfirmDanger" onclick="confirmBlock()">Block</button>
+                    <button class="btnConfirmCancel" onclick="closeBlockModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== Unblock User Confirmation Modal ====== -->
+        <div class="modal" id="unblockUserModal">
+            <div class="appModalCard">
+                <button class="modalCloseBtn" onclick="closeUnblockModal()">✕</button>
+                <h2 class="appModalTitle">Unblock user</h2>
+                <p class="appModalBody appModalBodyCentered" id="unblockModalBody">
+                    Are you sure you want to unblock this user?
+                </p>
+                <div class="appModalBtns">
+                    <button class="btnConfirmCancel" onclick="confirmUnblock()">Unblock</button>
+                    <button class="btnConfirmCancel" onclick="closeUnblockModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== Post Likes Modal ====== -->
+        <div class="modal" id="postLikesModal">
+            <div class="appModalCard">
+                <button class="modalCloseBtn" onclick="closePostLikesModal()">✕</button>
+                <h2 class="appModalTitle">Liked by</h2>
+                <div id="postLikesList" class="followTabList"></div>
+                <div class="appModalBtns">
+                    <button class="btnConfirmCancel" onclick="closePostLikesModal()">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Post card template (cloned by JS) -->
+        <template id="postCardTemplate">
+            <article class="postCard">
+
+                <!-- Nested header card: avatar + author + timestamp + badge + subject -->
+                <div class="postCardHeader">
+                    <div class="postAvatar">?</div>
+                    <div class="postAuthorInfo">
+                        <span class="postAuthorName">—</span>
+                        <span class="postTimestamp">—</span>
+                        <div class="postMeta">
+                            <span class="subjectBadge">—</span>
+                            <span class="postQuestionRef">—</span>
+                        </div>
+                    </div>
+                    <span class="postTypeBadge">Solution</span>
+                </div>
+
+                <!-- Post body text -->
+                <div class="postBody">—</div>
+
+                <!-- Attached image -->
+                <div class="postImageWrap postImageWrapHidden">
+                    <img class="postImage" src="">
+                </div>
+
+                <!-- Nested footer card: stars + action buttons + comments -->
+                <div class="postCardFooterWrap">
+
+                    <!-- Star rating -->
+                    <div class="postStarsRow"></div>
+
+                    <!-- Action bar -->
+                    <div class="postCardFooter">
+                        <button class="postActionBtn btnLikeToggle" title="Like">
+                            <span class="likeIcon">♡</span>
+                            <span class="likeCountLabel">0</span>
+                        </button>
+                        <button class="postActionBtn btnToggleComments" title="Comments">
+                            <span>💬</span>
+                            <span class="commentCountLabel">0</span>
+                        </button>
+                        <button class="postActionBtn btnSaveToggle" title="Save">
+                            <span class="saveIcon">🔖</span>
+                        </button>
+                        <button class="postActionBtn btnShare" title="Share">
+                            <span>↗</span>
+                        </button>
+                        <button class="postActionBtn btnDownload" title="Download">
+                            <span>⬇</span>
+                        </button>
+                    </div>
+
+                    <!-- Comments panel -->
+                    <div class="commentsPanel">
+                        <div class="commentsList"></div>
+                        <form class="commentInputRow">
+                            <input type="text" class="commentInput"
+                                placeholder="Add a comment…" autocomplete="off">
+                            <button type="submit" class="commentSendBtn">➤</button>
+                        </form>
+                    </div>
+
+                </div>
+
+            </article>
+        </template>
+
+    </div>
+
+    <script src="./Frontend/JavaScript/util.js"></script>
+    <script src="./Frontend/JavaScript/login.js"></script>
+    <script src="./Frontend/JavaScript/post.js"></script>
+    <script src="./Frontend/JavaScript/homefeed.js"></script>
+    <script src="./Frontend/JavaScript/profile.js"></script>
+    <script src="./Frontend/JavaScript/publish.js"></script>
+    <script src="./Frontend/JavaScript/settings.js"></script>
+    <script src="./Frontend/JavaScript/follow.js"></script>
+    <script src="./Frontend/JavaScript/notifications.js"></script>
+    <script src="./Frontend/JavaScript/search.js"></script>
+    <script src="./Frontend/JavaScript/chat.js"></script>
+    <script src="./Frontend/JavaScript/homepage.js"></script>
+    <script src="./Frontend/JavaScript/apis.js"></script>
+</body>
+</html>
